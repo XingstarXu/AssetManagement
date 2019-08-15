@@ -6,6 +6,12 @@ const TARGET_NODE=process.env.WEBPACK_TARGET==="node";
 const target=TARGET_NODE ? "server" : "client";
 const DEV_MODE=process.env.NODE_ENV==='development'
 module.exports={
+    publicPath: DEV_MODE ? 'http://127.0.0.1:8080':'http://127.0.0.1:3000',
+    //配置webpack dev server允許跨域
+    devServer:{
+         historyApiFallback: true,
+         headers:{'Access-Control-Allow-Origin':'*'}
+    },
     css:{
         //extract:false
         extract: process.env.NODE_ENV === 'production'

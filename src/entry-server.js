@@ -16,9 +16,9 @@ export default context=>{
                     code:404
                 })
             }
-            context.rendererd=()=>{
-                context.stat=store.state
-            }
+            // context.rendererd=()=>{
+            //     context.stat=store.state
+            // }
             //Promise 應該resolve應用程序實例，以便它可以渲染
             resolve(app);
         },reject)
