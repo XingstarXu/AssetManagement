@@ -17,6 +17,11 @@ export function createRouter(){
         path:'/about',
         name:'about',
         component:()=>import(/* webpackChunkname:"about" */'../views/About.vue')
+      },
+      {
+        path:'/storehouse',
+        name:'storehouse',
+        component:()=>import('../views/StoreHouse/StoreHouse_Index')
       }
     ]
   })

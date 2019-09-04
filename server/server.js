@@ -4,10 +4,6 @@ const path=require("path");
 const Router=require('koa-router')
 const send=require('koa-send')
 const router=new Router()
-//const koaStatic=require('koa-static');
-//const Vue=require("vue");
-//const Koa=require("koa");
-//const app=new Koa();
 
 const resolve=file=>path.resolve(__dirname,file);
 //開放dist目錄
