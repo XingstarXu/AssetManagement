@@ -7,7 +7,15 @@
                             :cancel-title="cancelText"
                             :hide-header-close="isHideCloseButten"
                             >
-    
+     <b-alert
+      :show="dismissCountDown"
+      dismissible
+      :variant="alert_variant"
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="countDownChanged"
+     >
+      {{alert_text}} {{ dismissCountDown }} seconds...
+     </b-alert>
       <slot name="body"></slot>
 
      <div slot="modal-footer" class="w-100" >
@@ -18,7 +26,7 @@
           :disabled="cancelDisabled"
           @click="closeDialog"
           >
-            Close
+            關閉
         </b-button>
         <slot name="okbutten" :confirmData="confirmData">
           
@@ -38,7 +46,12 @@ export default {
       isAoutoClose:false,//手動關閉標志。
       isHideCloseButten:true,
       cancelDisabled:false,
-      cancelText:"Cancel"
+      cancelText:"Cancel",
+      alert_text:"",
+      alert_variant:"",
+      dismissSecs: 5,
+      dismissCountDown: 0
+
 
     }
   },
@@ -48,6 +61,7 @@ export default {
        this.isAoutoClose=false;//設置為手動關閉標識（false:手動關閉）
        this.cancelDisabled=false;//禁用Cancel制標識
        this.isHideCloseButten=false;//顯示關閉制標識
+       this.$parent.beforeOpen(e);//調用父窗體的方法，用來處理不同窗體特有的處理
 
     },
      //關閉對話框前時的處理
@@ -77,7 +91,15 @@ export default {
          this.isHideCloseButten=true
          this.cancelDisabled=true
 
-     }
+     },
+     countDownChanged(dismissCountDown) {
+        this.dismissCountDown = dismissCountDown
+      },
+    showAlert(showText,showVariant) {
+        this.dismissCountDown = this.dismissSecs;
+        this.alert_text=showText;
+        this.alert_variant=showVariant;
+      }
   }
   
 }

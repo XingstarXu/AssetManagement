@@ -45,13 +45,13 @@ export default {
     mounted(){
             //原因是axios无法获取到this 解决办法: _this=this
             //var _this=this   
-            this.axios.get('http://192.168.12.26:9090/info/')
-            .then(function(res){
-                //_this.myinfo=res.data;
-                console.log(res.data);
-            },function(error){
-                console.log(error);
-            })
+            // this.axios.get('http://192.168.12.26:9090/asset_sys/testing/')
+            // .then(function(res){
+            //     //_this.myinfo=res.data;
+            //     console.log(res.data);
+            // },function(error){
+            //     console.log(error);
+            // })
        
     }
 }

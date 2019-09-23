@@ -6,8 +6,9 @@
         <div class="col-md-12" id="Top_had">
            <div id="nav">
               <router-link to="/">Home</router-link> |
-              <router-link to="/about">About</router-link>
-              <router-link to="/storehouse">Store House</router-link>
+              <router-link to="/about">About</router-link> |
+              <router-link to="/storehouse">Store House</router-link> |
+              <router-link to="/item">Item</router-link>
            </div>
         </div>
       </div>
@@ -17,7 +18,6 @@
           <MyMenu/>
         </div>        
          <div class="col-md-10">
-           .col-md-8
            <router-view/>
           </div>
        </div>
@@ -39,8 +39,10 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap&subset=chinese-traditional');
+
+html, body, #app {
+  font-family: 'Noto Sans TC', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;

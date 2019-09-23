@@ -6,13 +6,17 @@ import BootstrapVue from 'bootstrap-vue'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import vueResource from 'vue-resource'
+import vuelidate from 'vuelidate'
+import VueFormWizard from 'vue-form-wizard'
+import 'vue-form-wizard/dist/vue-form-wizard.min.css'
 
 //import store from './store'
 
 Vue.config.productionTip = false
 //引用axios之前一定要先引用VueAxios再引用axios,否則會不能識別axios
 Vue.use(VueAxios,axios,vueResource)
-Vue.use(BootstrapVue)
+Vue.use(BootstrapVue,VueFormWizard)
+Vue.use(vuelidate)
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'

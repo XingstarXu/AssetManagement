@@ -22,6 +22,11 @@ export function createRouter(){
         path:'/storehouse',
         name:'storehouse',
         component:()=>import('../views/StoreHouse/StoreHouse_Index')
+      },
+      {
+        path:'/item',
+        name:'item',
+        component:()=>import('../views/Item/Item_Index')
       }
     ]
   })
