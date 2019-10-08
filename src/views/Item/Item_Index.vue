@@ -28,7 +28,13 @@ export default {
         return{
             isLoading: false,
             fullPage: true,
-            containerName:null
+            containerName:null,
+            addLink:"http://192.168.12.26:9090/asset-sys/cre-item/",
+            updateLink:"http://192.168.12.26:9090/asset-sys/upd-item/",
+            searchLink:"http://192.168.12.26:9090/asset-sys/sel-item/",
+            checkCodeUnique:"http://192.168.12.26:9090/asset-sys/check-item-code/",
+            getTypeLink:"http://192.168.12.26:9090/asset-sys/sel-all-item-type/",
+            getUnitLink:"http://192.168.12.26:9090/asset-sys/sel-all-item-unit/",
 
         }
     },

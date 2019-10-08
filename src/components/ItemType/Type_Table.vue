@@ -1,8 +1,5 @@
 <template>
    <div>
-
-
-
         <publicTable ref="child" >
             <template v-slot:searchAdd>
                     <b-input-group prepend="篩選" class="mt-3">
@@ -14,85 +11,62 @@
             <template v-slot:buttenAdd>
               <b-button variant="success" align="right" @click="showNewDialog">
                    <i class="far fa-plus-square"></i>
-                   新增倉庫
+                   新增類型
                </b-button>
             </template>
 
             <template v-slot:diyColumn="myItem">
                   <b-button @click="showEditDialog(myItem.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
-
-            
-
-            
+           
         </publicTable>
-
-
-
-
    </div>
 </template>
 <script>
 import publicTable from '../PublicTable/PublicTable'
 export default {
-    name:'StoreHouse',
+    name:'item',
     data(){
         return{
-            columns: [
-                        {
-                            label: "倉庫編號",
-                            key: "code",
-                            sortable: true,
-                        },
-                        {
-                            label: "倉庫名稱(英)",
+            rows:[
+                  ],
+            columns: [ {
+                            label: "類型名稱(英)",
                             key: "desc1",
                             sortable: true,
                         },
                         {
-                            label: "倉庫名稱(中)",
+                            label: "類型名稱(中)",
                             key: "desc2",
                             sortable: true,
-                        }, 
-                        {
-                            label:"是否停用",
-                            key:"disable",
                         },
                         {
-                            label: "操作",
-                            key: "warehouse_id",
-
+                            label: "停用",
+                            key: "disable",
+                            
                         }, 
+                        {
+                            label:"操作",
+                            key:"type_id"
+                        }
                     ],
+            isDisable:-1,   
+            disableOptions:[{value:1 ,text:"停用"},{value:0 ,text:"啟用"},{value:-1 ,text:"全部"}]          
 
-                isDisable:-1,
-                disableOptions:[{value:1 ,text:"停用"},{value:0 ,text:"啟用"},{value:-1 ,text:"全部"}]
         }
     },
     methods:{
        showEditDialog(editRow){
            console.log(editRow);
-           this.$parent.$refs.shDialog.editData=editRow;
-           this.$parent.$refs.shDialog.operation="update";
+           this.$parent.$refs.tyDialog.editData=editRow;
+           this.$parent.$refs.tyDialog.operation="update";
            this.$bvModal.show('ModalDialog');
-
-           
-
        },
        showNewDialog(){
-           this.$parent.$refs.shDialog.operation="add"
+           this.$parent.$refs.tyDialog.operation="add"
            this.$bvModal.show('ModalDialog');
-
-
-
        },
-       showDelete(deleteRow){
-           this.$parent.$refs.shDelete.deleteData=deleteRow;    
-           this.$bvModal.show('ModalDelete');
 
-
-
-       },
        badingData(){
             let self=this; 
             self.isLoading=true;  
@@ -100,46 +74,44 @@ export default {
             let myPerPage=self.$refs.child.config.perPage;
             let mySearch=self.$refs.child.config.search;
             let myDisable=self.isDisable;
+
             this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"disable":myDisable})
                         .then(function(response){
                             let res=response.data;
                             self.$refs.child.rows = res.data
-                            self.$refs.child.columns=self.columns
-                            //self.isLoading=false;
+                            self.isLoading=false;
                             self.$refs.child.config.totalPage=res.total_page;  
                             self.$refs.child.config.totalRows=res.records;
-                            //self.updateTableData();
+
                         })
                         .catch(function(error){
                             console.log(error);
                             self.isLoading=false;
                         })
+
+
+
        },
 
 
      textSearch(){
          this.badingData();
      }
-     
     },
     components:{
         publicTable
-
     },
     mounted:function(){
         this.$refs.child.columns=this.columns;
-        this.$refs.child.opColumn="warehouse_id"//設置操作列
-        this.$refs.child.config.title="倉庫管理"
+        this.$refs.child.opColumn="type_id"//設置操作列
+        this.$refs.child.config.title="資產類型管理"
         this.badingData();
 
         
-    },
-    
+    }
+
 }
 </script>
-<style lang="scss">
+<style  lang="scss">
 
-#columnDispay{
-  display: none
-}
 </style>

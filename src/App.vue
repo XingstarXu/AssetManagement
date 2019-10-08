@@ -8,7 +8,9 @@
               <router-link to="/">Home</router-link> |
               <router-link to="/about">About</router-link> |
               <router-link to="/storehouse">Store House</router-link> |
-              <router-link to="/item">Item</router-link>
+              <router-link to="/item">Item</router-link>  |
+              <router-link to="/itemType">Item Type</router-link>  |
+              <router-link to="/itemUnit">Item Unit</router-link>
            </div>
         </div>
       </div>

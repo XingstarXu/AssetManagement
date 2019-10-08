@@ -23,7 +23,7 @@
              </b-form-group>
              <b-form-group
               label-cols-sm="4"
-              label="倉庫名稱(中文):"
+              label="倉庫名稱(英):"
               label-align-sm="right"
               label-for="nested-street"
              >                
@@ -36,7 +36,7 @@
 
              <b-form-group
               label-cols-sm="4"
-              label="倉庫名稱(英文):"
+              label="倉庫名稱(中):"
               label-align-sm="right"
               label-for="nested-street"
              >               
@@ -165,7 +165,8 @@ export default {
     beforeOpen(){
       this.$v.$reset();
       this.continueSaver=false;
-      this.isDisabled=true;       
+      this.isDisabled=true;  
+      this.editDisable_Disabled=false;     
       if(this.operation=="add")
       {
           this.editData={
@@ -175,7 +176,8 @@ export default {
             desc2:"",
             disable:0
           }
-          this.isDisabled=false;  
+          this.isDisabled=false; 
+          this.editDisable_Disabled=true; 
       }
       console.log(this.editData.disable)
       //e.preventDefault();//取消打開
@@ -205,7 +207,13 @@ export default {
                             self.$parent.$refs.shTable.badingData();
                         })
                         .catch(function(error){
-                            console.log(error)
+                            console.log(error);
+                            self.$refs.child.showAlert(error,"danger");
+                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
+                            self.$parent.isLoading=false;//關閉加載頁面
+                            self.isSaveDisabled=false;//啟用保存制
+                            self.saveText="保存"//保存制保存的字樣
+                            self.$parent.$refs.shTable.badingData();
                         })
       },
     updateData(){
@@ -231,7 +239,13 @@ export default {
                             self.$parent.$refs.shTable.badingData();
                         })
                         .catch(function(error){
-                            console.log(error)
+                            console.log(error);
+                            self.$refs.child.showAlert(error,"danger");
+                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
+                            self.$parent.isLoading=false;//關閉加載頁面
+                            self.isSaveDisabled=false;//啟用保存制
+                            self.saveText="保存"//保存制保存的字樣
+                            self.$parent.$refs.shTable.badingData();                            
                         })
       },      
 

@@ -1,110 +1,154 @@
 <template>
    <div>
-       <vue-bootstrap4-table :rows="rows" :columns="columns" :config="config" :searching="false">
-           <template slot="vbt-action-buttons" >
-               <b-button variant="success" align="right" @click="showNewDialog">
+        <publicTable ref="child" >
+            <template v-slot:searchAdd>
+                    <b-input-group prepend="篩選" class="mt-3">
+                        <b-input-group-append is-text>
+                        <b-form-select v-model="isISO" :options="isoOptions" @change="textSearch"></b-form-select>
+                        </b-input-group-append>
+                    </b-input-group> 
+            </template>
+            <template v-slot:buttenAdd>
+              <b-button variant="success" align="right" @click="showNewDialog">
                    <i class="far fa-plus-square"></i>
                    新增資產
                </b-button>
-           </template>
+            </template>
 
-           <template slot="op" slot-scope="props">
-                    
-                     <!--v-b-modal.ModalDialog props.row.id-->
-                     <b-button data-toggle="modal" data-target="#exampleModalEdit" type="button"  variant="primary" @click="showEditDialog(props.row)">
-                         <i class="fas fa-edit" ></i>
-                     </b-button>
-                     &nbsp; | &nbsp;
-                      <b-button data-toggle="modal" data-target="#exampleModalEdit" type="button" variant="danger"  @click="showDelete(props.row.id)">
-                         <i class="fas fa-trash-alt"></i>
-                     </b-button>                    
-                 
-           </template>
-       </vue-bootstrap4-table>
+            <template v-slot:diyColumn="myItem">
+                  <b-button @click="showEditDialog(myItem.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+            </template>
+
+            <template v-slot:photoColumn="myphoto">
+                  <img src="/assetsPhoto/1000006.jpg">
+            </template>
+           
+        </publicTable>
    </div>
 </template>
 <script>
-import VueBootstrap4Table from 'vue-bootstrap4-table'
+import publicTable from '../PublicTable/PublicTable'
 export default {
     name:'item',
     data(){
         return{
-            rows:[
-                    {
-                        "id": 1,
-                        "itName": "資產1",
-                        "itType": "0",
-                    },
-                    {
-                        "id": 2,
-                        "itName": "資產2",
-                        "itType": "1",
-                    },
-                    {
-                        "id": 3,
-                        "itName": "資產3",
-                        "itType": "2",
-                    }
-                 ],
-        columns: [{
-                        label: "資產編號",
-                        name: "id",
-                        sort: true,
-                    },
-                    {
-                        label: "資產名稱",
-                        name: "itName",
-                        sort: true,
-                    },
-                    {
-                        label: "資產類型",
-                        name: "itType",
-                        sort: true,
-                    }, 
-
-                    {
-                        label:"操作",
-                        name:"op"
-                    }
-                 ],
-                 config:{
-                     card_title: "資產管理"
-                 }              
+            rows:[],
+            columns: [{
+                            label: "資產編號",
+                            key: "code",
+                            sortable: true,
+                        },
+                        {
+                            label: "資產名稱(英)",
+                            key: "desc1",
+                            sortable: true,
+                        },
+                        {
+                            label: "資產名稱(中)",
+                            key: "desc2",
+                            sortable: true,
+                        },
+                        {
+                            label: "資產類型",
+                            key: "type_id",
+                            sortable: true,
+                        }, 
+                        {
+                            label:"單位",
+                            key:"unit_id",
+                            
+                        },
+                        {
+                            label:"型號",
+                            key:"model_no",
+                            
+                        },
+                        {
+                            label:"ISO",
+                            key:"iso"
+                           
+                        },
+                        {
+                            label:"供應商",
+                            key:"vendor_code"
+                           
+                        },
+                        {
+                            label:"數量",
+                            key:"qty"
+                           
+                        },                                              
+                        {
+                            label:"操作",
+                            key:"item_id"
+                        }
+                        ,                                              
+                        {
+                            label:"圖片",
+                            key:"img"
+                        }
+                    ],
+            isISO:-1, 
+            isoOptions:[{value:1 ,text:"ISO"},{value:0 ,text:"非ISO"},{value:-1 ,text:"全部"}]
 
         }
     },
     methods:{
        showEditDialog(editRow){
-           //this.$root.$emit('bv::show::modal', 'ModalDialog',ui)
-           console.log(editRow);
-           this.$parent.$refs.itDialog.editData=editRow;
+           this.$parent.$refs.itDialog.setData(editRow);
            this.$parent.$refs.itDialog.operation="update";
            this.$bvModal.show('ModalDialog');
-
-           
-
        },
        showNewDialog(){
-           //this.$root.$emit('bv::show::modal', 'ModalDialog',ui)
-           //let newRow=[{id:"",shName:"",shLevel:""}]
            this.$parent.$refs.itDialog.operation="add"
            this.$bvModal.show('ModalDialog');
-
-
-
        },
-       showDelete(myid){
-           //this.$root.$emit('bv::show::modal', 'ModalDialog',ui)
-           this.$parent.$refs.itDelete.id=myid;    
+       showDelete(deleteRow){
+           this.$parent.$refs.itDelete.deleteData=deleteRow;    
            this.$bvModal.show('ModalDelete');
+       },
+       badingData(){
+            let self=this; 
+            self.isLoading=true;  
+            let myCurrentPage=self.$refs.child.config.currentPage;
+            let myPerPage=self.$refs.child.config.perPage;
+            let mySearch=self.$refs.child.config.search;
+            let myISO=self.isISO;
+
+            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"iso":myISO})
+                        .then(function(response){
+                            let res=response.data;
+                            self.$refs.child.rows = res.data
+                            //self.isLoading=false;
+                            self.$refs.child.config.totalPage=res.total_page;  
+                            self.$refs.child.config.totalRows=res.records;
+                            console.log(res.data);
+
+                        })
+                        .catch(function(error){
+                            console.log(error);
+                            self.isLoading=false;
+                        })
+       },
 
 
-
-       }
+     textSearch(){
+         this.badingData();
+     }
     },
     components:{
-        VueBootstrap4Table
+        publicTable
+    },
+    mounted:function(){
+        this.$refs.child.columns=this.columns;
+        this.$refs.child.opColumn="item_id"//設置操作列
+        this.$refs.child.opColumn2="img"//設置操作列
+        this.$refs.child.config.title="資產管理"
+        this.badingData();
+
+        
     }
+
 }
 </script>
 <style  lang="scss">
