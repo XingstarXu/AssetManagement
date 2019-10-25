@@ -1,0 +1,279 @@
+<template>
+<div>
+  
+  <b-modal :id="myModalDialog" content-class="shadow" :title="modal_titel" @show="beforeOpen" @hide="cardCloseDo" 
+                            @close="closeDialog" 
+                            :cancel-disabled="cancelDisabled"
+                            :cancel-title="cancelText"
+                            :hide-header-close="isHideCloseButten"
+                            :size="dialogSize"
+                            >
+     <b-alert
+      :show="dismissCountDown"
+      dismissible
+      :variant="alert_variant"
+      @dismissed="dismissCountDown=0"
+      @dismiss-count-down="countDownChanged"
+     >
+      {{alert_text}} {{ dismissCountDown }} seconds...
+     </b-alert>
+      <b-container class="bv-example-row">
+        <b-row>
+          <b-col>
+           <slot name="body"></slot>
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+
+                <slot name="diyButton">
+
+                </slot>
+
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+              <b-table :items="tableRows" :fields="tableColumns"  
+              :sort-by.sync="tableConfig.sortBy"
+              :sort-desc.sync="tableConfig.sortDesc"
+              sortClass="sort-icon-left"
+              :tbody-tr-class="rowClass"
+              no-border-collapse:true
+              striped hover
+              selectable
+              :select-mode="selectMode"
+              @row-clicked="onRowClicked"
+              @row-selected="onRowSelected"
+              :per-page="tableConfig.perPage"
+              :current-page="tableConfig.currentPage"  
+              @change="pageChange"            
+              ref="selectTable"
+             
+              >
+                  <template v-slot:table-caption>
+                      <b-pagination
+                      v-model="tableConfig.currentPage"
+                      :total-rows="tableConfig.totalRows"
+                      :per-page="tableConfig.perPage"
+                     
+                      align="left"
+                      size="sm"
+                      class="my-0"
+                      first-text="First"
+                      prev-text="Prev"
+                      next-text="Next"
+                      last-text="Last"
+                      
+                      >
+                      </b-pagination>
+                          <div>
+                          總頁數  <b>{{tableConfig.totalPage}}</b>頁， 
+                          每頁顯示 <b>{{tableConfig.perPage}}</b>條記錄，
+                          總記錄數  <b>{{tableConfig.totalRows}}</b>條
+                          </div>
+                  </template>
+                         
+                   <template v-slot:cell(selectcolumn)="{item}">
+                    <template v-if="isSelected(item)">
+                      <span aria-hidden="true">&check;</span>
+                      <span class="sr-only">Selected</span>
+                    </template>
+                    <template v-else>
+                      <span aria-hidden="true">&nbsp;</span>
+                      <span class="sr-only">Not selected</span>
+                    </template> 
+                  </template>                                                        
+                  <template v-slot:cell(opcolumn)="data">
+                          <slot name="diyColumn" v-bind="{data}">
+                          </slot>
+                  </template>
+
+                  <template v-slot:cell(editColumn)="data">
+                     <slot name="diyColumn2" v-bind="{data}">
+                    </slot>
+                  </template>
+
+                  <template v-slot:cell(editColumn2)="data">
+                     <slot name="diyColumn3" v-bind="{data}">
+                    </slot>
+                  </template>
+
+                   <template v-slot:cell(editColumn3)="data">
+                     <slot name="diyColumn4" v-bind="{data}">
+                    </slot>
+                  </template>  
+
+                  <template v-slot:cell(editColumn4)="data">
+                     <slot name="diyColumn5" v-bind="{data}">
+                    </slot>
+                  </template>
+
+                   <template v-slot:cell(editColumn5)="data">
+                     <slot name="diyColumn6" v-bind="{data}">
+                    </slot>
+                  </template>                                  
+
+              </b-table>  
+          </b-col>
+        </b-row>
+        <b-row>
+          <b-col>
+            <slot name="selectButton">
+
+            </slot>
+          </b-col>
+        </b-row>
+
+      </b-container>
+
+     <div slot="modal-footer" class="w-100" >
+        <b-button
+          variant="primary"
+          size="sm"
+          class="float-left"
+          :disabled="cancelDisabled"
+          @click="closeDialog"
+          >
+            關閉
+        </b-button>
+        <slot name="okbutten" :confirmData="confirmData">
+          
+        </slot>
+      </div>
+
+  </b-modal>
+</div>
+</template>
+<script>
+export default {
+  name:"publicDialog",
+  data(){
+    return{
+      modal_titel:"",
+      isAoutoClose:false,//手動關閉標志。
+      isHideCloseButten:true,
+      cancelDisabled:false,
+      cancelText:"Cancel",
+      alert_text:"",
+      alert_variant:"",
+      dismissSecs: 5,
+      dismissCountDown: 0,
+      dialogSize:"md",
+      tableColumns:[],
+      tableRows:[], 
+      tableConfig:{
+                sortBy:"",
+                sortDesc:false,
+                totalRows:0,
+                currentPage:1,
+                perPage: 5,
+                pageOptions: [5, 10, 15],
+                title:"",
+                search:"",
+                isDisable:0,
+                totalPage:0
+      },
+      opTableColumn:"",
+      myModalDialog:"ModalDialog",
+      selectMode:"multi",
+      isSelectAll:0
+    }
+  },
+  methods:{
+    //打開對話框前
+    beforeOpen (e) {  
+       this.isAoutoClose=false;//設置為手動關閉標識（false:手動關閉）
+       this.cancelDisabled=false;//禁用Cancel制標識
+       this.isHideCloseButten=false;//顯示關閉制標識
+       this.$parent.beforeOpen(e);//調用父窗體的方法，用來處理不同窗體特有的處理
+       
+    },
+     //關閉對話框前時的處理
+     cardCloseDo(e){
+
+         if(!this.isAoutoClose)//如果不是手動關閉即不會關閉對話框（即防止點擊背景時自動關閉）
+         {
+             e.cancel();
+             return;
+         }
+
+    },
+    //手動關閉對話框
+     closeDialog(){
+
+         this.isAoutoClose=true//標志為手動關閉。
+         this.$root.$emit('bv::hide::modal', this.myModalDialog)
+     },
+
+     closeConfirm(){
+
+                   this.cancelDisabled=false;
+                   this.isHideCloseButten=false;
+     },
+
+     confirmData(){
+         this.isHideCloseButten=true
+         this.cancelDisabled=true
+
+     },
+     countDownChanged(dismissCountDown) {
+        this.dismissCountDown = dismissCountDown
+      },
+    showAlert(showText,showVariant) {
+        this.dismissCountDown = this.dismissSecs;
+        this.alert_text=showText;
+        this.alert_variant=showVariant;
+      },
+      badingData(){
+        console.clear();
+         this.$parent.badingData();//調用父級的綁定數據方法，以應用不同的處理。
+
+       },
+       rowClass(item) {
+            if (!item) return
+            if (item.disable === 1){
+                return 'table-danger'
+            } 
+       },
+
+      pageChange (page) {
+        this.$parent.pageChange(page);
+          
+      },       
+
+      // pageChange (page) {
+      //     this.tableConfig.currentPage = page;
+      //     if(this.serverModel)
+      //     {
+      //       this.badingData(); 
+      //     }
+          
+      // },
+// 處理已選擇行的記錄。刪除已選擇行的記錄
+      onRowClicked(item){
+
+         this.$parent.onRowClicked(item);
+      },
+// 處理已選擇行的記錄。保存已選擇行的記錄
+      onRowSelected(items){
+         this.$parent.onRowSelected(items)
+      },
+
+  //處理已選行的樣式，已選擇則顯示√，否則顯示不顯示     
+      isSelected(citem){       
+        return this.$parent.isSelected(citem);
+      },   
+      selectAll(){
+        this.$refs.selectTable.selectAllRows();
+      },
+      unSelectAll(){
+        this.$refs.selectTable.clearSelected();
+      }
+
+
+  },
+
+  
+}
+</script>

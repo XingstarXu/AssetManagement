@@ -74,7 +74,7 @@ export default {
       saveText:"保存",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       editData:{
-        type_id:"",
+        _id:"",
         desc1:"",
         desc2:"",
         disable:0
@@ -122,7 +122,7 @@ export default {
       if(this.operation=="add")
       {
           this.editData={
-                        type_id:"",
+                        _id:"",
                         desc1:"",
                         desc2:"",
                         disable:0
@@ -168,7 +168,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.updateLink,
                            {
-                              "type_id":self.editData.type_id, "desc1":self.editData.desc1, "desc2":self.editData.desc2,  "disable":self.editData.disable,"update_by":"jx.xu"   
+                              "_id":self.editData._id, "desc1":self.editData.desc1, "desc2":self.editData.desc2,  "disable":self.editData.disable,"update_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)

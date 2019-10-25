@@ -10,7 +10,7 @@
                 label-for="nested-street"
             >
                  <b-form-input v-model.trim="$v.editData.desc1.$model" :class="{ 'is-invalid': $v.editData.desc1.$error,'is-valid':!$v.editData.desc1.$invalid }"></b-form-input>
-                  <div class="valid-feedback" >單位名稱(中)正確</div>
+                  <div class="valid-feedback" >單位名稱(英)正確</div>
                   <div class="invalid-feedback">
                       <span v-if="!$v.editData.desc1.required">類型名稱(中)必要的</span>
                   </div>                
@@ -23,7 +23,7 @@
                 label-for="nested-street"
             >
                  <b-form-input v-model.trim="$v.editData.desc2.$model" :class="{ 'is-invalid': $v.editData.desc2.$error,'is-valid':!$v.editData.desc2.$invalid }"></b-form-input>
-                  <div class="valid-feedback" >單位名稱(英)正確</div>
+                  <div class="valid-feedback" >單位名稱(中)正確</div>
                   <div class="invalid-feedback">
                       <span v-if="!$v.editData.desc2.required">類型名稱(英)必要的</span>
                   </div>                
@@ -74,7 +74,7 @@ export default {
       saveText:"保存",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       editData:{
-        unit_id:"",
+        _id:"",
         desc1:"",
         desc2:"",
         disable:0
@@ -122,7 +122,7 @@ export default {
       if(this.operation=="add")
       {
           this.editData={
-                        unit_id:"",
+                        _id:"",
                         desc1:"",
                         desc2:"",
                         disable:0
@@ -168,7 +168,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.updateLink,
                            {
-                              "unit_id":self.editData.unit_id, "desc1":self.editData.desc1, "desc2":self.editData.desc2,  "disable":self.editData.disable,"update_by":"jx.xu"   
+                              "_id":self.editData._id, "desc1":self.editData.desc1, "desc2":self.editData.desc2,  "disable":self.editData.disable,"update_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)

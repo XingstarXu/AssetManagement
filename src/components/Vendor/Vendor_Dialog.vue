@@ -2,32 +2,16 @@
 <div>
   <publicDialog ref="child" >           
           <template v-slot:body>
-            <b-form-group
-              label-cols-sm="4"
-              label="倉庫編號:"
-              label-align-sm="right"
-              label-for="nested-street"
-            >               
-                 <b-form-input v-model.trim="$v.editData.code.$model" :disabled="isDisabled" 
-                    :class="{ 'is-invalid': $v.editData.code.$error,'is-valid':!$v.editData.code.$invalid }"
-                    @input="setCode($event)"
-                     ></b-form-input>
-                 <div class="valid-feedback" >倉庫編號正確</div>
-                 <div class="invalid-feedback">
-                   <span v-if="!$v.editData.code.required">倉庫編號是必須的</span>
-                   <span v-if="!$v.editData.code.isUnique">倉庫號已存</span>
-                   <span v-if="!$v.editData.code.minLength | !$v.editData.code.maxLength">倉庫編號長度必需為{{$v.editData.code.$params.minLength.min}} 至 {{$v.editData.code.$params.maxLength.min}}位</span>
-                 </div>
-                 
-
-             </b-form-group>
              <b-form-group
               label-cols-sm="4"
-              label="倉庫名稱(英):"
+              label="供應商名稱(英):"
               label-align-sm="right"
               label-for="nested-street"
              >                
-                 <b-form-input v-model.trim="$v.editData.desc1.$model" :class="{ 'is-invalid': $v.editData.desc1.$error,'is-valid':!$v.editData.desc1.$invalid }"></b-form-input>
+                 <b-form-input 
+                   v-model.trim="$v.editData.desc1.$model" 
+                   :class="{ 'is-invalid': $v.editData.desc1.$error,'is-valid':!$v.editData.desc1.$invalid }"
+                 ></b-form-input>
                   <div class="valid-feedback" >倉庫名稱(英文)正確</div>
                  <div class="invalid-feedback">
                    <span v-if="!$v.editData.desc1.required">倉庫名稱(英文)必要的</span>
@@ -36,16 +20,78 @@
 
              <b-form-group
               label-cols-sm="4"
-              label="倉庫名稱(中):"
+              label="供應商名稱(中):"
               label-align-sm="right"
               label-for="nested-street"
              >               
-                 <b-form-input v-model.trim="$v.editData.desc2.$model"  :class="{ 'is-invalid': $v.editData.desc2.$error,'is-valid':!$v.editData.desc2.$invalid }"></b-form-input>
+                 <b-form-input 
+                   v-model.trim="$v.editData.desc2.$model"  
+                   :class="{ 'is-invalid': $v.editData.desc2.$error,'is-valid':!$v.editData.desc2.$invalid }"
+                 ></b-form-input>
                 <div class="valid-feedback" >倉庫名稱(中文)正確</div>
                  <div class="invalid-feedback">
                    <span v-if="!$v.editData.desc2.required">倉庫名稱(中文)必要的</span>
                  </div>                  
              </b-form-group>  
+             
+             <b-form-group
+               label-cols-sm="4"
+               label="電話:"
+               label-align-sm="right"
+               label-for="nested-street"
+             >
+                <b-form-input 
+                  v-model.trim="$v.editData.phone.$model"
+                  :class="{'is-invalid':$v.editData.phone.$error,'is-valid':!$v.editData.phone.$invalid}"
+                ></b-form-input>
+                <div class="valid-feedback">電話正確</div>
+                <div class="invalid-feedback">
+                  <span v-if="!$v.editData.phone.required">電話是必要的</span>
+                  <span v-if="!$v.editData.phone.minLength">電話長度最少8位數</span>
+                </div>
+             </b-form-group>
+
+             <b-form-group
+               label-cols-sm="4"
+               label="郵箱:"
+               label-align-sm="right"
+               label-for="nested-street"
+
+             >
+               <b-form-input
+                  v-model.trim="$v.editData.email.$model"
+                  :class="{'is-invalid' :$v.editData.email.$error,'is-valid':!$v.editData.email.$invalid}"
+               ></b-form-input>
+
+               <div class="valid-feedback">郵箱正確</div>
+               <div class="invalid-feedback">
+                 <span v-if="!$v.editData.email.required">郵箱是必要的</span>
+                 <span v-if="!$v.editData.email.isEmail">請填寫正確的郵箱址</span>
+               </div>
+
+             </b-form-group>
+
+
+
+
+             <b-form-group
+             label-cols-sm="4"
+             label="地址:"
+             label-align-sm="right"
+             label-for="nested-street"            
+             >
+             <b-form-textarea 
+               v-model.trim="$v.editData.address.$model"
+               :class="{ 'is-invalid': $v.editData.address.$error,'is-valid':!$v.editData.address.$invalid }"             
+             >
+             </b-form-textarea>
+             <div class="valid-feedback">地址正確</div>
+             <div class="invalid-feedback">
+               <span v-if="!$v.editData.address.required">地址是必要的</span>
+             </div>
+
+             </b-form-group>
+
 
              <b-form-group
               label-cols-sm="4"
@@ -67,7 +113,7 @@
                          <strong class="mr-auto">Notice!</strong>
                        </div>
                     </template>
-                     你即將會停用此倉庫！如不是停用此倉庫請取消這選項，否則請按繼續保存.
+                     你即將會停用此供應商！如不是停用此供應商請取消這選項，否則請按繼續保存.
                </b-toast>               
                  
              </b-form-group> 
@@ -96,18 +142,20 @@
 </template>
 <script>
 import publicDialog from "../PublicDialog/PublicDialog"
-import { required, minLength } from 'vuelidate/lib/validators'
+import { required, minLength, helpers } from 'vuelidate/lib/validators'
 export default {
-  name:"shDialog",
+  name:"veDialog",
   data(){
     return{
       saveText:"保存",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       editData:{
         _id:"",
-        code:"",
         desc1:"",
         desc2:"",
+        address:"",
+        phone:"",
+        email:"",
         disable:0
       },
       isDisabled:false,//控制輸入項是否可以編輯
@@ -129,6 +177,7 @@ export default {
               return;
         }
         else{
+            console.log(this.editData.disable)
             if(this.editData.disable & !this.continueSaver)
             {
               this.$bvToast.show('example-toast')
@@ -148,7 +197,7 @@ export default {
             this.saveText="Saveing...";//保存制正在保存中的字樣
             this.isSaveDisabled=true;//禁用保存制
             switch(this.operation)
-            { 
+            {
               case "add":
                 this.addData();
 
@@ -170,9 +219,11 @@ export default {
       {
           this.editData={
             _id:"",
-            code:"",
             desc1:"",
             desc2:"",
+            address:"",
+            phone:"",
+            email:"",
             disable:0
           }
           this.isDisabled=false; 
@@ -186,7 +237,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.addLink,
                            {
-                             "code":self.editData.code, "desc1":self.editData.desc1, "desc2":self.editData.desc2, "create_by":"jx.xu"   
+                             "desc1":self.editData.desc1, "desc2":self.editData.desc2,"address":self.editData.address,"phone":self.editData.phone,"email":self.editData.email, "create_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -203,7 +254,7 @@ export default {
                             self.$parent.isLoading=false;//關閉加載頁面
                             self.isSaveDisabled=false;//啟用保存制
                             self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.shTable.badingData();
+                            self.$parent.$refs.veTable.badingData();
                         })
                         .catch(function(error){
                             console.log(error);
@@ -212,14 +263,14 @@ export default {
                             self.$parent.isLoading=false;//關閉加載頁面
                             self.isSaveDisabled=false;//啟用保存制
                             self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.shTable.badingData();
+                            self.$parent.$refs.veTable.badingData();
                         })
       },
     updateData(){
           let self=this;         
           this.$http.post(this.$parent.updateLink,
                            {
-                             "_id": self.editData._id,"code":self.editData.code, "desc1":self.editData.desc1, "desc2":self.editData.desc2, "disable":self.editData.disable,"update_by":"jx.xu"   
+                             "_id": self.editData._id, "desc1":self.editData.desc1, "desc2":self.editData.desc2,"address":self.editData.address,"phone":self.editData.phone,"email":self.editData.email,"disable":self.editData.disable, "update_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -235,7 +286,7 @@ export default {
                             self.$parent.isLoading=false;//關閉加載頁面
                             self.isSaveDisabled=false;//啟用保存制
                             self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.shTable.badingData();
+                            self.$parent.$refs.veTable.badingData();
                         })
                         .catch(function(error){
                             console.log(error);
@@ -244,75 +295,38 @@ export default {
                             self.$parent.isLoading=false;//關閉加載頁面
                             self.isSaveDisabled=false;//啟用保存制
                             self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.shTable.badingData();                            
+                            self.$parent.$refs.veTable.badingData();                            
                         })
       },      
 
-      // 封装axios请求，返回promise, 用于驗證是否唯一。
-    getCodeUnique (data) {
-      return new Promise((resolve, reject) => {
-        this.axios.post(this.$parent.checkCodeUnique, {
-          "code":data
-        }).then((res) => {
-          resolve(res)
-        }).catch((err) => {
-          reject(err)
-        })
-      })
-    },
-
-    setCode(value){
-      this.editData.code=value.toUpperCase();
-
-    }
 
   },
   components:{
     publicDialog
   },
   mounted(){
-    this.$refs.child.modal_titel="倉庫管理"
-
-
+    this.$refs.child.modal_titel="供應商管理"
   },
   validations: {
     editData: {
-      code:{
-          required,
-          minLength: minLength(1),
-          maxLength: minLength(3),
-          async isUnique (value) {//驗證是否唯一
-            let se=this
-            let isCodeUnique=false
-            if (value === '') return true
-            try {
-              let res = await se.getCodeUnique(value)
-              console.log(res);
-              // 等拿到返回数据res后再进行处理
-              if(res.data.res==0 | se.operation=="update")
-              {
-                isCodeUnique=true  
-              }
-              else
-              {
-                isCodeUnique=false 
-              }
-             
-           } catch (err) {
-             console.log(err)
-             isCodeUnique=true
-           
-           } 
-            return Boolean(isCodeUnique)
-
-          }
-         },
       desc1:{
         required
       },
       desc2:{
         required
-      }      
+      },  
+      address:{
+        required
+      },
+      phone:{
+        required,
+        minLength:minLength(8)
+      },
+      email:{
+        required,
+        isEmail: helpers.regex('alpha', /^(([^<>()\\[\]\\.,;:\s@"]+(\.[^<>()\\[\\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,24}))$/)
+      },
+                      
     },
 
 

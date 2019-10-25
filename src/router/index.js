@@ -37,6 +37,16 @@ export function createRouter(){
         path:'/itemUnit',
         name:'itemUnit',
         component:()=>import('../views/ItemUnit/ItemUnit_Index')
+      },
+      {
+        path:'/vendor',
+        name:'vendor',
+        component:()=>import('../views/Vendor/Vendor_Index')
+      },
+      {
+        path:'/trans',
+        name:'trans',
+        component:()=>import('../views/Transaction/Trans_Index')
       }
     ]
   })

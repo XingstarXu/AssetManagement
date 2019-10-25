@@ -19,7 +19,7 @@
             </template>
 
             <template v-slot:diyColumn="myItem">
-                  <b-button @click="showEditDialog(myItem.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+                  <b-button @click="showEditDialog(myItem.data.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
 
             
@@ -60,7 +60,7 @@ export default {
                         },
                         {
                             label: "操作",
-                            key: "warehouse_id",
+                            key: "opColumn",
 
                         }, 
                     ],
@@ -100,7 +100,7 @@ export default {
             let myPerPage=self.$refs.child.config.perPage;
             let mySearch=self.$refs.child.config.search;
             let myDisable=self.isDisable;
-            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"disable":myDisable})
+            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"disable":myDisable,"order_by":"","order_desc":false})
                         .then(function(response){
                             let res=response.data;
                             self.$refs.child.rows = res.data
@@ -128,7 +128,6 @@ export default {
     },
     mounted:function(){
         this.$refs.child.columns=this.columns;
-        this.$refs.child.opColumn="warehouse_id"//設置操作列
         this.$refs.child.config.title="倉庫管理"
         this.badingData();
 

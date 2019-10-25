@@ -10,7 +10,7 @@
                 label-for="nested-street"
             >
                  <b-form-input v-model.trim="$v.editData.desc1.$model" :class="{ 'is-invalid': $v.editData.desc1.$error,'is-valid':!$v.editData.desc1.$invalid }"></b-form-input>
-                  <div class="valid-feedback" >資產名稱正確</div>
+                  <div class="valid-feedback" >資產名稱正確(英)</div>
                   <div class="invalid-feedback">
                       <span v-if="!$v.editData.desc1.required">資產名稱必要的</span>
                   </div>                
@@ -23,7 +23,7 @@
                 label-for="nested-street"
             >
                  <b-form-input v-model.trim="$v.editData.desc2.$model" :class="{ 'is-invalid': $v.editData.desc2.$error,'is-valid':!$v.editData.desc2.$invalid }"></b-form-input>
-                  <div class="valid-feedback" >資產名稱正確</div>
+                  <div class="valid-feedback" >資產名稱正確(中)</div>
                   <div class="invalid-feedback">
                       <span v-if="!$v.editData.desc1.required">資產名稱必要的</span>
                   </div>                
@@ -55,8 +55,8 @@
                 </div>                   -->
                 <model-list-select :list="options_Type"  v-model.trim="$v.editData.type_id.$model" 
                                    :isError= $v.editData.type_id.$error                       
-                                   option-value="type_id"
-                                   option-text="desc1"
+                                   option-value="_id"
+                                   option-text="desc2"
                                    >                 
                 </model-list-select>
 
@@ -83,27 +83,17 @@
 
                 <model-list-select :list="options_Unit"  v-model.trim="$v.editData.unit_id.$model" 
                                    :isError= $v.editData.unit_id.$error                       
-                                   option-value="unit_id"
-                                   option-text="desc1"
+                                   option-value="_id"
+                                   option-text="desc2"
                                    >                 
                 </model-list-select>
 
-                <div v-if="$v.editData.type_id.$error" class="invalid-feedback d-block">
+                <div v-if="$v.editData.unit_id.$error" class="invalid-feedback d-block">
                    <span>資單位是型必要的</span>
                 </div>
 
 
-             </b-form-group> 
-
-              <b-form-group 
-                  label-cols-sm="3" 
-                  label="供應商:" 
-                  label-align-sm="right"
-                  label-for="nested-street"
-             >
-                 <b-form-select v-model="editData.vendor_code" :options="options_Vendor" ></b-form-select>
-               
-             </b-form-group>             
+             </b-form-group>    
 
              <b-form-group 
                   label-cols-sm="3"
@@ -152,6 +142,32 @@
              </b-form-group>
 
 
+            <b-form-group
+              label-cols-sm="4"
+              label="停用:"
+              label-align-sm="right"
+              label-for="nested-street"
+             >               
+               <b-form-checkbox
+                v-model="editData.disable"
+                class="pt-2"
+                :disabled="editDisable_Disabled"
+                value=1
+                unchecked-value=0
+               ></b-form-checkbox>
+               <b-toast id="example-toast" title="BootstrapVue" static no-auto-hide variant="warning" solid>
+                    <template v-slot:toast-title>
+                       <div class="d-flex flex-grow-1 align-items-baseline">
+                         <b-img blank blank-color="#ff5555" class="mr-2" width="12" height="12"></b-img>
+                         <strong class="mr-auto">Notice!</strong>
+                       </div>
+                    </template>
+                     你即將會停用此資產！如不是停用此資產請取消這選項，否則請按繼續保存.
+               </b-toast>               
+                 
+             </b-form-group> 
+
+
 
           </template>
           <template v-slot:okbutten >
@@ -184,7 +200,7 @@ export default {
       saveText:"Save",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       editData:{
-        item_id:"",
+        _id:"",
         desc1:"",
         desc2:"",
         code:"",
@@ -192,25 +208,22 @@ export default {
         type_id:"",
         model_no:"",
         iso:0,
-        vendor_code:"",
         img:"",
         qty:0,
-        warehouse_code:""
+        disable:""
       },
       isDisabled:false,
       operation:"",
       options_Type: [],
       options_Unit: [],
-      options_Vendor: [
-          { value: '0', text: '供應商1' },
-          { value: '1', text: '供應商2' },
-          { value: '2', text: '供應商3' }
-      ],     
+      options_Vendor: [],     
       photoPath:"/assetsPhoto/",
       photoFile:null,
       photoBase64:"",
       photoErrorText:"",
-      photoError:false
+      photoError:false,
+      editDisable_Disabled:false,//停用項是否可以編輯
+      continueSaver:false //是否繼續保存標示
 
     }
   },
@@ -222,6 +235,20 @@ export default {
               return;
         }
         else{
+            if(this.editData.disable & !this.continueSaver)
+            {
+              this.$bvToast.show('example-toast')
+              this.saveText="繼續保存"
+              this.continueSaver=true
+              return;
+            }
+            else
+            {
+              this.$bvToast.hide('example-toast')
+              this.saveText="保存"
+              this.continueSaver=false
+            }
+
             this.$refs.child.confirmData();//調用公用窗體的confirmData方法，用禁用相關的按鈕。
             this.$parent.isLoading=true;//啟動加載頁面
             this.saveText="Saveing...";//保存制正在保存中的字樣
@@ -245,11 +272,12 @@ export default {
       this.$v.$reset();
       this.continueSaver=false;
       this.isDisabled=true; 
-      this.$parent.isLoading=false;      
+      this.$parent.isLoading=false;  
+      this.editDisable_Disabled=false;    
       if(this.operation=="add")
       {
           this.editData={
-                          item_id:"",
+                          _id:"",
                           desc1:"",
                           desc2:"",
                           code:"",
@@ -257,13 +285,13 @@ export default {
                           type_id:"",
                           model_no:"",
                           iso:0,
-                          vendor_code:"",
                           img:"1000006.jpg",
                           qty:0,
-                          warehouse_code:""
+                          disable:""
 
                         }
           this.isDisabled=false;  
+          this.editDisable_Disabled=true;
       }
       //靜態資源文件需要放在public文件夾中才能動態讀取到。
       this.photoPath="/assetsPhoto/"+this.editData.img;
@@ -286,7 +314,6 @@ export default {
 
           this.$http.post(this.$parent.addLink,
                            {
-                             "code":self.editData.code, 
                              "desc1":self.editData.desc1, 
                              "desc2":self.editData.desc2, 
                              "qty":self.editData.qty, 
@@ -294,16 +321,14 @@ export default {
                              "type_id":self.editData.type_id, 
                              "model_no":self.editData.model_no, 
                              "img":self.editData.img, 
-                             "warehouse_code":self.editData.warehouse_code,
                              "iso":self.editData.iso,
-                             "vendor_code":self.editData.vendor_code, 
                              "create_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
                             {
                               self.$refs.child.showAlert(response.data.msg,"success");
-                              self.savePhoto();
+                              //self.savePhoto();
 
                             }
                             else{
@@ -329,17 +354,27 @@ export default {
                         })
       },
     updateData(){
-          let self=this;         
+          let self=this;   
           this.$http.post(this.$parent.updateLink,
                            {
-                              "item_id":self.editData.item_id, "desc1":self.editData.desc1, "desc2":self.editData.desc2,  "code":self.editData.code, "qty":self.editData.qty, "unit_id":self.editData.unit_id, "type_id":self.editData.type_id, "model_no":self.editData.model_no, "img":self.editData.img, "warehouse_code":self.editData.warehouse_code,"iso":self.editData.iso,"vendor_code":self.editData.vendor_code,"update_by":"jx.xu"   
+                              "_id":self.editData._id,
+                              "desc1":self.editData.desc1,
+                              "desc2":self.editData.desc2, 
+                              "code":self.editData.code,
+                              "qty":self.editData.qty, 
+                              "unit_id":self.editData.unit_id, 
+                              "type_id":self.editData.type_id, 
+                              "model_no":self.editData.model_no, 
+                              "img":self.editData.img, 
+                              "iso":self.editData.iso,
+                              "disable":self.editData.disable,
+                              "update_by":"jx.xu"   
                            })
                         .then(function(response){
-                            console.log(self.editData.type_id)
                             if(response.data.code>0)
                             {
                               self.$refs.child.showAlert(response.data.msg,"success");
-                              self.savePhoto();
+                              //self.savePhoto();
 
                             }
                             else{
@@ -366,7 +401,7 @@ export default {
       
     getType(){
       let self=this;
-      this.$http.post(this.$parent.getTypeLink,{}
+      this.$http.post(this.$parent.getTypeLink,{"disable":0}
                     )
                     .then(
                       function(response){
@@ -385,7 +420,7 @@ export default {
     },
     getUnit(){
       let self=this;
-      this.$http.post(this.$parent.getUnitLink,{}
+      this.$http.post(this.$parent.getUnitLink,{"disable":0}
                     )
                     .then(
                       function(response){
@@ -401,10 +436,9 @@ export default {
                     )
     },
 
-
     setData(editRow){
                 this.editData={
-                          item_id:editRow.item_id,
+                          _id:editRow._id,
                           desc1:editRow.desc1,
                           desc2:editRow.desc2,
                           code:editRow.code,
@@ -412,10 +446,9 @@ export default {
                           type_id:editRow.type_id,
                           model_no:editRow.model_no,
                           iso:editRow.iso,
-                          vendor_code:editRow.vendor_code,
                           img:editRow.img,
                           qty:editRow.qty,
-                          warehouse_code:editRow.warehouse_code
+                          disable:editRow.disable
 
                         }
 
@@ -459,8 +492,7 @@ export default {
       var url="assetsPhoto";
       this.$http.post(url,formData,{
         headers:{'Content-Type':'multipart/form-data'}
-      }).then(function(res){
-        console.log(res)
+      }).then(function(){
         self.$refs.child.shoAlert("Photo saveed success!","success");
 
 

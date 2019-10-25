@@ -36,7 +36,7 @@
             :sort-desc.sync="config.sortDesc"
             sortClass="sort-icon-left"
             :tbody-tr-class="rowClass"
-            no-border-collapse="true"
+            no-border-collapse:true
             >
             <template v-slot:table-caption>
                 <b-pagination
@@ -59,16 +59,16 @@
                     總記錄數  <b>{{config.totalRows}}</b>條
                     </div>
             </template>
-            <template :slot="opColumn" slot-scope="{value,item}">
-                    <slot name="diyColumn" v-bind="{value,item}">
+            <template v-slot:cell(opColumn)="data" >
+                    <slot name="diyColumn" v-bind="{data}">
 
                      </slot>
                      
             </template>
 
 
-            <template :slot="opColumn2" slot-scope="{value,item}">
-                    <slot name="photoColumn" v-bind="{value,item}">
+            <template v-slot:cell(photoColumn)="data">
+                    <slot name="photoColumn" v-bind="{data}">
 
                      </slot>
             </template>
@@ -100,8 +100,6 @@ export default {
                 isDisable:0,
                 totalPage:0
             },
-            opColumn:"",
-            opColumn2:""
         }
     },
     methods:{

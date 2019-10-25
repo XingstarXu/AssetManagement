@@ -16,7 +16,7 @@
             </template>
 
             <template v-slot:diyColumn="myItem">
-                  <b-button @click="showEditDialog(myItem.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+                  <b-button @click="showEditDialog(myItem.data.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
            
         </publicTable>
@@ -47,7 +47,7 @@ export default {
                         }, 
                         {
                             label:"操作",
-                            key:"type_id"
+                            key:"opColumn"
                         }
                     ],
             isDisable:-1,   
@@ -75,7 +75,7 @@ export default {
             let mySearch=self.$refs.child.config.search;
             let myDisable=self.isDisable;
 
-            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"disable":myDisable})
+            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"disable":myDisable,"order_by":"","order_desc":false})
                         .then(function(response){
                             let res=response.data;
                             self.$refs.child.rows = res.data
@@ -103,7 +103,6 @@ export default {
     },
     mounted:function(){
         this.$refs.child.columns=this.columns;
-        this.$refs.child.opColumn="type_id"//設置操作列
         this.$refs.child.config.title="資產類型管理"
         this.badingData();
 

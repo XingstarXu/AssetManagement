@@ -35,6 +35,7 @@ export default {
             checkCodeUnique:"http://192.168.12.26:9090/asset-sys/check-item-code/",
             getTypeLink:"http://192.168.12.26:9090/asset-sys/sel-all-item-type/",
             getUnitLink:"http://192.168.12.26:9090/asset-sys/sel-all-item-unit/",
+            getVendonLink:"http://192.168.12.26:9090/asset-sys/sel-all-vdr/",
 
         }
     },

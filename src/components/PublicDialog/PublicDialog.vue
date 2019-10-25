@@ -6,6 +6,7 @@
                             :cancel-disabled="cancelDisabled"
                             :cancel-title="cancelText"
                             :hide-header-close="isHideCloseButten"
+                            :size="dialogSize"
                             >
      <b-alert
       :show="dismissCountDown"
@@ -50,7 +51,8 @@ export default {
       alert_text:"",
       alert_variant:"",
       dismissSecs: 5,
-      dismissCountDown: 0
+      dismissCountDown: 0,
+      dialogSize:"md"
 
 
     }

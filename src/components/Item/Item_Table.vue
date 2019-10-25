@@ -7,6 +7,11 @@
                         <b-form-select v-model="isISO" :options="isoOptions" @change="textSearch"></b-form-select>
                         </b-input-group-append>
                     </b-input-group> 
+                     <b-input-group prepend="篩選" class="mt-3">
+                        <b-input-group-append is-text>
+                        <b-form-select v-model="isDisable" :options="disableOptions" @change="textSearch"></b-form-select>
+                        </b-input-group-append>
+                    </b-input-group>                    
             </template>
             <template v-slot:buttenAdd>
               <b-button variant="success" align="right" @click="showNewDialog">
@@ -16,7 +21,7 @@
             </template>
 
             <template v-slot:diyColumn="myItem">
-                  <b-button @click="showEditDialog(myItem.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+                  <b-button @click="showEditDialog(myItem.data.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
 
             <template v-slot:photoColumn="myphoto">
@@ -69,27 +74,28 @@ export default {
                            
                         },
                         {
-                            label:"供應商",
-                            key:"vendor_code"
-                           
-                        },
-                        {
                             label:"數量",
                             key:"qty"
                            
-                        },                                              
+                        }, 
+                        {
+                            label:"總額",
+                            key:"amt"
+                        },                                             
                         {
                             label:"操作",
-                            key:"item_id"
+                            key:"opColumn"
                         }
                         ,                                              
                         {
                             label:"圖片",
-                            key:"img"
+                            key:"photoColumn"
                         }
                     ],
             isISO:-1, 
-            isoOptions:[{value:1 ,text:"ISO"},{value:0 ,text:"非ISO"},{value:-1 ,text:"全部"}]
+            isDisable:-1,
+            isoOptions:[{value:1 ,text:"ISO"},{value:0 ,text:"非ISO"},{value:-1 ,text:"全部"}],
+            disableOptions:[{value:0,text:"使用"},{value:1,text:"停用"},{value:-1,text:"全部"}]
 
         }
     },
@@ -114,16 +120,15 @@ export default {
             let myPerPage=self.$refs.child.config.perPage;
             let mySearch=self.$refs.child.config.search;
             let myISO=self.isISO;
+            let myDisable=self.isDisable;
 
-            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"iso":myISO})
+            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"iso":myISO,"disable":myDisable,"order_by":"","order_desc":false})
                         .then(function(response){
                             let res=response.data;
-                            self.$refs.child.rows = res.data
+                            self.$refs.child.rows = res.data;
                             //self.isLoading=false;
                             self.$refs.child.config.totalPage=res.total_page;  
                             self.$refs.child.config.totalRows=res.records;
-                            console.log(res.data);
-
                         })
                         .catch(function(error){
                             console.log(error);
@@ -141,8 +146,6 @@ export default {
     },
     mounted:function(){
         this.$refs.child.columns=this.columns;
-        this.$refs.child.opColumn="item_id"//設置操作列
-        this.$refs.child.opColumn2="img"//設置操作列
         this.$refs.child.config.title="資產管理"
         this.badingData();
 
