@@ -55,15 +55,6 @@ export default {
     return{
       saveText:"加入",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
-      editData:{
-        trans_id:"",
-        code:"",
-        vendor_id:"",
-        invoice_no:"",
-        delivery_no:"",
-        remark:"",
-        disable:0
-      },
       isDisabled:false,//控制輸入項是否可以編輯
       editDisable_Disabled:false,//停用項是否可以編輯
       operation:"",//窗體的操作類型 add:新增， update:更改
@@ -78,18 +69,13 @@ export default {
             },
             {
                 label: "資產號",
-                key: "code",
+                key: "item_code",
                 sortable: true,
             },
             {
                 label: "資產名稱",
-                key: "desc2",
+                key: "item_desc2",
                 sortable: true,
-            },
-            {
-                label:"所在倉庫",
-                key:"warehouse_desc2"
-
             },
             {
                 label:"數量",
@@ -109,14 +95,16 @@ export default {
   methods:{
     saveData(){
       console.clear();
+
+      
       let selItem={};    
       this.selected.forEach(
         item=>{
-          const rowsIds = this.$parent.$refs.child.tableRows.map(rowItem => rowItem.item_code);
-          if(rowsIds.includes(item.code))
+          const rowsIds = this.$parent.$refs.child.tableRows.map(rowItem => rowItem.item_id);
+          if(rowsIds.includes(item.item_id))
           {
             for(let i in this.$parent.$refs.child.tableRows){
-              if(this.$parent.$refs.child.tableRows[i].item_code==item.code){
+              if(this.$parent.$refs.child.tableRows[i].item_id==item.item_id){
                 //this.$parent.$refs.child.tableRows[i].qty+=item.qty;
                 break;
               }
@@ -124,13 +112,15 @@ export default {
 
           }
           else{
-             selItem={"item_code":item.code,"item_desc2":item.desc2,"warehouse_code":item.code,"warehouse_desc2":item.warehouse_desc2,"qty":item.qty,"remark":""};
+
+             selItem={"item_id":item.item_id,"item_desc1":item.item_desc1,"item_desc2":item.item_desc2,"warehouse_id":item.warehouse_id,"warehouse_desc1":item.warehouse_desc1,"warehouse_desc2":item.warehouse_desc2,"qty":item.qty,"price":0,amt:0,"remark":"","create_by":""};
              this.$parent.$refs.child.tableRows.push(selItem);
           }
 
         }
       )
       this.$parent.$refs.child.tableConfig.totalRows=this.$parent.$refs.child.tableRows.length;
+      console.log(this.$parent.$refs.child.tableRows);
 
     },
     beforeOpen(){
@@ -140,22 +130,33 @@ export default {
     },
 
       badingData(){
-              this.rows=[{"item_id":"1","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v01","code":"fb001","desc2":"資產1","qty":3,"img":"圖片1"},
-                  {"item_id":"2","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v02","code":"fb002","desc2":"資產2","qty":2,"img":"圖片2"},
-                  {"item_id":"3","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v03","code":"fb003","desc2":"資產3","qty":5,"img":"圖片3"},
-                  {"item_id":"4","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v04","code":"fb004","desc2":"資產4","qty":7,"img":"圖片4"},
-                  {"item_id":"5","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v05","code":"fb005","desc2":"資產5","qty":1,"img":"圖片5"},
-                  {"item_id":"6","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb006","desc2":"資產6","qty":2,"img":"圖片6"},
-                  {"item_id":"7","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb007","desc2":"資產7","qty":2,"img":"圖片7"},
-                  {"item_id":"8","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb008","desc2":"資產8","qty":2,"img":"圖片8"},
-                  {"item_id":"9","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb009","desc2":"資產9","qty":2,"img":"圖片9"},
-                  {"item_id":"10","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb010","desc2":"資產10","qty":1,"img":"圖片10"},
-                  {"item_id":"11","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v07","code":"fb011","desc2":"資產11","qty":8,"img":"圖片10"}                 
-                ];
+              // this.rows=[{"item_id":"1","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v01","code":"fb001","desc2":"資產1","qty":3,"img":"圖片1"},
+              //     {"item_id":"2","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v02","code":"fb002","desc2":"資產2","qty":2,"img":"圖片2"},
+              //     {"item_id":"3","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v03","code":"fb003","desc2":"資產3","qty":5,"img":"圖片3"},
+              //     {"item_id":"4","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v04","code":"fb004","desc2":"資產4","qty":7,"img":"圖片4"},
+              //     {"item_id":"5","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v05","code":"fb005","desc2":"資產5","qty":1,"img":"圖片5"},
+              //     {"item_id":"6","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb006","desc2":"資產6","qty":2,"img":"圖片6"},
+              //     {"item_id":"7","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb007","desc2":"資產7","qty":2,"img":"圖片7"},
+              //     {"item_id":"8","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb008","desc2":"資產8","qty":2,"img":"圖片8"},
+              //     {"item_id":"9","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb009","desc2":"資產9","qty":2,"img":"圖片9"},
+              //     {"item_id":"10","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb010","desc2":"資產10","qty":1,"img":"圖片10"},
+              //     {"item_id":"11","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v07","code":"fb011","desc2":"資產11","qty":8,"img":"圖片10"}                 
+              //   ];
+            let self=this;
+            this.$http.post(this.$parent.$parent.getItemLink,{"search":this.search,"disable":0})
+                        .then(function(response){
+                            let res=response.data;
+                            console.log(res);
+                            self.$refs.child.tableRows = res.data
+                            self.$refs.child.tableColumns=self.columns
+                            self.isLoading=false;
+                            self.$refs.child.tableConfig.totalRows=res.records;
 
-              this.$refs.child.tableRows=this.rows;
-            // this.$refs.child.tableConfig.totalPage=3;  
-              this.$refs.child.tableConfig.totalRows=this.rows.length;
+                        })
+                        .catch(function(error){
+                            console.log(error);
+                            self.isLoading=false;
+                        })
         
       },
 
@@ -213,22 +214,6 @@ export default {
       },
       //清除所有當前頁面的選擇項
       clearSelectCurrentPage(){
-        //console.clear();
-        //console.log(this.selected);
-        // let start_index=this.$refs.child.tableConfig.currentPage*this.$refs.child.tableConfig.perPage-this.$refs.child.tableConfig.perPage;
-        // let end_index=start_index+this.$refs.child.tableConfig.perPage;
-        // for (let index = start_index; index < end_index; index++) {
-        //     for(let i in this.selected){
-        //        if (this.selected[i].item_id==this.rows[index].item_id ) {
-        //             this.selected.splice(i, 1);
-        //             console.log(this.rows[index].item_id);
-        //             break;
-                    
-        //         }
-          
-        //      }
-        // }
-
         this.rows.forEach(item => {
             for(let i in this.selected){
                if (this.selected[i].item_id==item.item_id ) {
@@ -239,7 +224,9 @@ export default {
             }
         })
 
-      }
+      },
+      rowClass(){
+      },
            
 
   },

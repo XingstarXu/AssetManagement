@@ -29,10 +29,12 @@ export default {
             isLoading: false,
             fullPage: true,
             containerName:null,
-            addLink:"http://192.168.12.26:9090/asset-sys/",
-            updateLink:"http://192.168.12.26:9090/asset-sys/",
-            searchLink:"http://192.168.12.26:9090/asset-sys/",
-            getWareHouseLink:"http://192.168.12.26:9090/asset-sys/sel-wh/"
+            addLink:"http://192.168.12.26:9090/asset-sys/cre-trans/",
+            updateLink:"http://192.168.12.26:9090/asset-sys/upd-trans/",
+            searchLink:"http://192.168.12.26:9090/asset-sys/sel-trans-for-table/",
+            getWareHouseLink:"http://192.168.12.26:9090/asset-sys/sel-all-wh/",
+            getVendorLink:"http://192.168.12.26:9090/asset-sys/sel-all-vdr/",
+            getItemLink:"http://192.168.12.26:9090/asset-sys/sel-item/"
 
 
         }

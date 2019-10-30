@@ -112,7 +112,16 @@
                    <template v-slot:cell(editColumn5)="data">
                      <slot name="diyColumn6" v-bind="{data}">
                     </slot>
-                  </template>                                  
+                  </template>  
+
+                  <template v-slot:foot(footCloumn1)="data">
+                    <slot name="footColumn1" v-bind="{data}">
+                    </slot>
+                  </template>  
+                  <template v-slot:foot(footCloumn1)="data">
+                    <slot name="footColumn1" v-bind="{data}">
+                    </slot>
+                  </template>                                                                  
 
               </b-table>  
           </b-col>
@@ -190,11 +199,10 @@ export default {
        
     },
      //關閉對話框前時的處理
-     cardCloseDo(e){
-
+     cardCloseDo(bvModalEvt){
          if(!this.isAoutoClose)//如果不是手動關閉即不會關閉對話框（即防止點擊背景時自動關閉）
          {
-             e.cancel();
+           bvModalEvt.preventDefault();
              return;
          }
 
@@ -231,10 +239,8 @@ export default {
 
        },
        rowClass(item) {
-            if (!item) return
-            if (item.disable === 1){
-                return 'table-danger'
-            } 
+         return this.$parent.rowClass(item);
+
        },
 
       pageChange (page) {
@@ -269,8 +275,17 @@ export default {
       },
       unSelectAll(){
         this.$refs.selectTable.clearSelected();
-      }
+      },
+      selectRow(index){
+        this.$refs.selectTable.selectRow(index)
+      },
+      unselectRow(index){
+        this.$refs.selectTable.unselectRow(index)
+      },
+      isRowSelected(index){
+        return this.$refs.selectTable.isRowSelected(index)
 
+      }
 
   },
 

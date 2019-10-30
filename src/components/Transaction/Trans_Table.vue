@@ -10,6 +10,10 @@
                         <b-form-select v-model="isDisable" :options="disableOptions" @change="textSearch"></b-form-select>
                         </b-input-group-append>
                     </b-input-group> 
+                    <b-input-group prepend="入倉日期篩選" class="mt-3">
+                       <b-form-input id="datepicker" type="date" v-model="searchDate" placeholder="輸入要查詢的入倉日期"></b-form-input>
+                    </b-input-group> 
+                  
             </template>
             <template v-slot:buttenAdd>
               <b-button variant="success" align="right" @click="showNewDialog">
@@ -19,7 +23,7 @@
             </template>
 
             <template v-slot:diyColumn="myItem">
-                  <b-button @click="showEditDialog(myItem.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+                  <b-button @click="showEditDialog(myItem.data)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
 
             
@@ -33,7 +37,10 @@
    </div>
 </template>
 <script>
-import publicTable from '../PublicTable/PublicTable'
+import publicTable from '../PublicTable/PublicTable';
+
+
+
 export default {
     name:'Vendor',
     data(){
@@ -42,42 +49,38 @@ export default {
 
                         {
                             label: "入倉單號",
-                            key: "code",
+                            key: "header.code",
                             sortable: true,
                         },                     
                         {
                             label: "供應商名稱(中)",
-                            key: "desc2",
+                            key: "header.vendor_desc2",
                             sortable: true,
                         },
                         {
-                            label:"發票號",
-                            kay:"invoice_no"
+                            label:"日期",
+                            key:"header.trans_date"
                         },
-                        {
-                            label:"交貨號",
-                            kay:"delivery_no"
-
-                        },
-                        {
+                         {
                             label:"備註",
-                            key:"remark",
+                            key:"header.remark",
                         },
                         {
                             label: "操作",
-                            key: "trans_id",
+                            key: "opColumn",
 
                         }, 
                     ],
 
                 isDisable:-1,
-                disableOptions:[{value:1 ,text:"停用"},{value:0 ,text:"啟用"},{value:-1 ,text:"全部"}]
+                disableOptions:[{value:1 ,text:"停用"},{value:0 ,text:"啟用"},{value:-1 ,text:"全部"}],
+                searchDate:""
         }
     },
     methods:{
        showEditDialog(editRow){
-           console.log(editRow);
-           this.$parent.$refs.trDialog.editData=editRow;
+           this.$parent.$refs.trDialog.setData(editRow.item.header,editRow.item.details);
+        //    this.$parent.$refs.trDialog.editData=editRow;
            this.$parent.$refs.trDialog.operation="update";
            this.$bvModal.show('ModalDialog');
 
@@ -104,9 +107,9 @@ export default {
             let myCurrentPage=self.$refs.child.config.currentPage;
             let myPerPage=self.$refs.child.config.perPage;
             let mySearch=self.$refs.child.config.search;
-            let myDisable=self.isDisable;
-            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"disable":myDisable})
-                        .then(function(response){
+            let mySearchDate=self.searchDate;
+            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"order_by":"","order_desc":false,"trans_date":mySearchDate})
+                        .then(function(response){                           
                             let res=response.data;
                             self.$refs.child.rows = res.data
                             self.$refs.child.columns=self.columns
@@ -123,7 +126,7 @@ export default {
 
 
      textSearch(){
-         //this.badingData();
+         this.badingData();
      }
      
     },
@@ -133,9 +136,9 @@ export default {
     },
     mounted:function(){
         this.$refs.child.columns=this.columns;
-        this.$refs.child.opColumn="trans_id"//設置操作列
+        //this.$refs.child.opColumn="trans_id"//設置操作列
         this.$refs.child.config.title="入倉管理"
-        //this.badingData();
+        this.badingData();
 
         
     },
@@ -143,8 +146,8 @@ export default {
 }
 </script>
 <style lang="scss">
-
 #columnDispay{
   display: none
 }
+
 </style>

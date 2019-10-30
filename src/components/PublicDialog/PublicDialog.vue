@@ -67,11 +67,11 @@ export default {
 
     },
      //關閉對話框前時的處理
-     cardCloseDo(e){
+     cardCloseDo(bvModalEvt){
 
          if(!this.isAoutoClose)//如果不是手動關閉即不會關閉對話框（即防止點擊背景時自動關閉）
          {
-             e.cancel();
+             bvModalEvt.preventDefault();
              return;
          }
 
