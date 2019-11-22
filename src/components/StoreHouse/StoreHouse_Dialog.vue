@@ -8,15 +8,15 @@
               label-align-sm="right"
               label-for="nested-street"
             >               
-                 <b-form-input v-model.trim="$v.editData.code.$model" :disabled="isDisabled" 
-                    :class="{ 'is-invalid': $v.editData.code.$error,'is-valid':!$v.editData.code.$invalid }"
+                 <b-form-input v-model.trim="$v.editData.warehouse_code.$model" :disabled="isDisabled" 
+                    :class="{ 'is-invalid': $v.editData.warehouse_code.$error,'is-valid':!$v.editData.warehouse_code.$invalid }"
                     @input="setCode($event)"
                      ></b-form-input>
                  <div class="valid-feedback" >倉庫編號正確</div>
                  <div class="invalid-feedback">
-                   <span v-if="!$v.editData.code.required">倉庫編號是必須的</span>
-                   <span v-if="!$v.editData.code.isUnique">倉庫號已存</span>
-                   <span v-if="!$v.editData.code.minLength | !$v.editData.code.maxLength">倉庫編號長度必需為{{$v.editData.code.$params.minLength.min}} 至 {{$v.editData.code.$params.maxLength.min}}位</span>
+                   <span v-if="!$v.editData.warehouse_code.required">倉庫編號是必須的</span>
+                   <span v-if="!$v.editData.warehouse_code.isUnique">倉庫號已存</span>
+                   <span v-if="!$v.editData.warehouse_code.minLength | !$v.editData.warehouse_code.maxLength">倉庫編號長度必需為{{$v.editData.warehouse_code.$params.minLength.min}} 至 {{$v.editData.warehouse_code.$params.maxLength.min}}位</span>
                  </div>
                  
 
@@ -27,10 +27,10 @@
               label-align-sm="right"
               label-for="nested-street"
              >                
-                 <b-form-input v-model.trim="$v.editData.desc1.$model" :class="{ 'is-invalid': $v.editData.desc1.$error,'is-valid':!$v.editData.desc1.$invalid }"></b-form-input>
+                 <b-form-input v-model.trim="$v.editData.warehouse_desc1.$model" :class="{ 'is-invalid': $v.editData.warehouse_desc1.$error,'is-valid':!$v.editData.warehouse_desc1.$invalid }"></b-form-input>
                   <div class="valid-feedback" >倉庫名稱(英文)正確</div>
                  <div class="invalid-feedback">
-                   <span v-if="!$v.editData.desc1.required">倉庫名稱(英文)必要的</span>
+                   <span v-if="!$v.editData.warehouse_desc1.required">倉庫名稱(英文)必要的</span>
                  </div>                
              </b-form-group>
 
@@ -40,10 +40,10 @@
               label-align-sm="right"
               label-for="nested-street"
              >               
-                 <b-form-input v-model.trim="$v.editData.desc2.$model"  :class="{ 'is-invalid': $v.editData.desc2.$error,'is-valid':!$v.editData.desc2.$invalid }"></b-form-input>
+                 <b-form-input v-model.trim="$v.editData.warehouse_desc2.$model"  :class="{ 'is-invalid': $v.editData.warehouse_desc2.$error,'is-valid':!$v.editData.warehouse_desc2.$invalid }"></b-form-input>
                 <div class="valid-feedback" >倉庫名稱(中文)正確</div>
                  <div class="invalid-feedback">
-                   <span v-if="!$v.editData.desc2.required">倉庫名稱(中文)必要的</span>
+                   <span v-if="!$v.editData.warehouse_desc2.required">倉庫名稱(中文)必要的</span>
                  </div>                  
              </b-form-group>  
 
@@ -104,10 +104,10 @@ export default {
       saveText:"保存",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       editData:{
-        _id:"",
-        code:"",
-        desc1:"",
-        desc2:"",
+        warehouse_id:"",
+        warehouse_code:"",
+        warehouse_desc1:"",
+        warehouse_desc2:"",
         disable:0
       },
       isDisabled:false,//控制輸入項是否可以編輯
@@ -169,10 +169,10 @@ export default {
       if(this.operation=="add")
       {
           this.editData={
-            _id:"",
-            code:"",
-            desc1:"",
-            desc2:"",
+            warehouse_id:"",
+            warehouse_code:"",
+            warehouse_desc1:"",
+            warehouse_desc2:"",
             disable:0
           }
           this.isDisabled=false; 
@@ -186,7 +186,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.addLink,
                            {
-                             "code":self.editData.code, "desc1":self.editData.desc1, "desc2":self.editData.desc2, "create_by":"jx.xu"   
+                             "warehouse_code":self.editData.warehouse_code, "warehouse_desc1":self.editData.warehouse_desc1, "warehouse_desc2":self.editData.warehouse_desc2, "create_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -219,7 +219,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.updateLink,
                            {
-                             "_id": self.editData._id,"code":self.editData.code, "desc1":self.editData.desc1, "desc2":self.editData.desc2, "disable":self.editData.disable,"update_by":"jx.xu"   
+                             "warehouse_id": self.editData.warehouse_id,"warehouse_code":self.editData.warehouse_code, "warehouse_desc1":self.editData.warehouse_desc1, "warehouse_desc2":self.editData.warehouse_desc2, "disable":self.editData.disable,"update_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -252,7 +252,7 @@ export default {
     getCodeUnique (data) {
       return new Promise((resolve, reject) => {
         this.axios.post(this.$parent.checkCodeUnique, {
-          "code":data
+          "warehouse_code":data
         }).then((res) => {
           resolve(res)
         }).catch((err) => {
@@ -262,8 +262,18 @@ export default {
     },
 
     setCode(value){
-      this.editData.code=value.toUpperCase();
+      this.editData.warehouse_code=value.toUpperCase();
 
+    },
+    setData(editRow){
+                  this.editData={
+                          warehouse_id:editRow.warehouse_id,
+                          warehouse_code:editRow.warehouse_code,
+                          warehouse_desc1:editRow.warehouse_desc1,
+                          warehouse_desc2:editRow.warehouse_desc2,
+                          disable:editRow.disable
+
+                          }
     }
 
   },
@@ -277,7 +287,7 @@ export default {
   },
   validations: {
     editData: {
-      code:{
+      warehouse_code:{
           required,
           minLength: minLength(1),
           maxLength: minLength(3),
@@ -307,10 +317,10 @@ export default {
 
           }
          },
-      desc1:{
+      warehouse_desc1:{
         required
       },
-      desc2:{
+      warehouse_desc2:{
         required
       }      
     },

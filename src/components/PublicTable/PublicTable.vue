@@ -1,79 +1,92 @@
 <template>
    <div>
-        <b-container fluid class="text-light text-center">
+        <b-container fluid class="bv-example-row">
         <b-row >
-                <b-col  class="p-3 bg-info">{{this.config.title}}</b-col>
+                <b-col md="12"  class="p-3 bg-info text-center" >{{this.config.title}}</b-col>
         </b-row>
 
-        <b-row >
-                <b-col md="4"  class="p-3">
-                <b-input-group prepend="搜索" class="mt-3">
-                        <b-form-input v-model="config.search" @input="setValue($event)"></b-form-input>
-                        <b-input-group-append>
-                        <b-button variant="outline-success" @click="textSearch" >Search</b-button>
-                        </b-input-group-append>
-
-                </b-input-group>
-                    <slot name="searchAdd">
-
-                    </slot>
-                </b-col>
+        <b-row class="mb-3">
+            <b-col md="4" style="text-align: left">
+                <b-container fluid >
+                    <b-row>
+                        <b-col >
+                            <b-input-group prepend="搜索" class="mt-3">
+                                    <b-form-input v-model="config.search" @input="setValue($event)"></b-form-input>
+                                    <b-input-group-append>
+                                    <b-button variant="outline-success" @click="textSearch" >Search</b-button>
+                                    </b-input-group-append>
+                            </b-input-group>
+                            <slot name="searchAdd">
+                            </slot>
+                        </b-col>
+                    </b-row>
+                </b-container>
+             </b-col>
 
         </b-row>
-        <b-row >
-                <b-col md="4"  class="p-3">
-                    <slot name="buttenAdd">
-
-                    </slot>
+        <b-row class="mb-3">
+                <b-col md="12" style="text-align: right">
+                    <b-container fluid >
+                        <b-row>
+                            <b-col>
+                                <slot name="buttenAdd">
+                                </slot>
+                            </b-col>
+                        </b-row>
+                    </b-container>  
                 </b-col>
+              
 
         </b-row>
 
         <b-row class="align-content">
-            <b-col>
-            <b-table :items="rows" :fields="columns"  
-            :sort-by.sync="config.sortBy"
-            :sort-desc.sync="config.sortDesc"
-            sortClass="sort-icon-left"
-            :tbody-tr-class="rowClass"
-            no-border-collapse:true
-            >
-            <template v-slot:table-caption>
-                <b-pagination
-                v-model="config.currentPage"
-                :total-rows="config.totalRows"
-                :per-page="config.perPage"
-                @change="pageChange"
-                align="left"
-                size="sm"
-                class="my-0"
-                first-text="First"
-                prev-text="Prev"
-                next-text="Next"
-                last-text="Last"
+            <b-col md="12">
+                <b-table :items="rows" :fields="columns"  
+                :sort-by.sync="config.sortBy"
+                :sort-desc.sync="config.sortDesc"
+                sortClass="sort-icon-left"
+                :tbody-tr-class="rowClass"
+                no-border-collapse:true
+                selectable
+                select-mode="single"
+                ref="publicTable"
                 >
-                </b-pagination>
-                    <div>
-                    總頁數  <b>{{config.totalPage}}</b>頁， 
-                    每頁顯示 <b>{{config.perPage}}</b>條記錄，
-                    總記錄數  <b>{{config.totalRows}}</b>條
-                    </div>
-            </template>
-            <template v-slot:cell(opColumn)="data" >
-                    <slot name="diyColumn" v-bind="{data}">
+                <template v-slot:table-caption>
+                    <b-pagination
+                    v-model="config.currentPage"
+                    :total-rows="config.totalRows"
+                    :per-page="config.perPage"
+                    @change="pageChange"
+                    align="left"
+                    size="sm"
+                    class="my-0"
+                    first-text="First"
+                    prev-text="Prev"
+                    next-text="Next"
+                    last-text="Last"
+                    >
+                    </b-pagination>
+                        <div>
+                        總頁數  <b>{{config.totalPage}}</b>頁， 
+                        每頁顯示 <b>{{config.perPage}}</b>條記錄，
+                        總記錄數  <b>{{config.totalRows}}</b>條
+                        </div>
+                </template>
+                <template v-slot:cell(opColumn)="data" >
+                        <slot name="diyColumn" v-bind="{data}">
 
-                     </slot>
-                     
-            </template>
+                        </slot>
+                        
+                </template>
 
 
-            <template v-slot:cell(photoColumn)="data">
-                    <slot name="photoColumn" v-bind="{data}">
+                <template v-slot:cell(photoColumn)="data">
+                        <slot name="photoColumn" v-bind="{data}">
 
-                     </slot>
-            </template>
+                        </slot>
+                </template>
 
-            </b-table>      
+                </b-table>      
             </b-col>
 
         </b-row>
@@ -104,10 +117,7 @@ export default {
     },
     methods:{
             rowClass(item) {
-                if (!item) return
-                if (item.disable === 1){
-                    return 'table-danger'
-                } 
+                return this.$parent.rowClass(item);//調用父級的綁定數據方法，以應用不同的處理。
             },
 
             pageChange (page) {
@@ -121,6 +131,10 @@ export default {
             setValue(value){
                 //this.config.search=value.toUpperCase();
                 this.config.search=value;
+
+            },
+            selectRow(index){
+                this.$refs.publicTable.selectRow(index);
 
             }
 

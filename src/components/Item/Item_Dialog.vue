@@ -9,10 +9,10 @@
                 label-align-sm="right"
                 label-for="nested-street"
             >
-                 <b-form-input v-model.trim="$v.editData.desc1.$model" :class="{ 'is-invalid': $v.editData.desc1.$error,'is-valid':!$v.editData.desc1.$invalid }"></b-form-input>
+                 <b-form-input v-model.trim="$v.editData.item_desc1.$model" :class="{ 'is-invalid': $v.editData.item_desc1.$error,'is-valid':!$v.editData.item_desc1.$invalid }"></b-form-input>
                   <div class="valid-feedback" >資產名稱正確(英)</div>
                   <div class="invalid-feedback">
-                      <span v-if="!$v.editData.desc1.required">資產名稱必要的</span>
+                      <span v-if="!$v.editData.item_desc1.required">資產名稱必要的</span>
                   </div>                
              </b-form-group>
 
@@ -22,10 +22,10 @@
                 label-align-sm="right"
                 label-for="nested-street"
             >
-                 <b-form-input v-model.trim="$v.editData.desc2.$model" :class="{ 'is-invalid': $v.editData.desc2.$error,'is-valid':!$v.editData.desc2.$invalid }"></b-form-input>
+                 <b-form-input v-model.trim="$v.editData.item_desc2.$model" :class="{ 'is-invalid': $v.editData.item_desc2.$error,'is-valid':!$v.editData.item_desc2.$invalid }"></b-form-input>
                   <div class="valid-feedback" >資產名稱正確(中)</div>
                   <div class="invalid-feedback">
-                      <span v-if="!$v.editData.desc1.required">資產名稱必要的</span>
+                      <span v-if="!$v.editData.item_desc2.required">資產名稱必要的</span>
                   </div>                
              </b-form-group>
 
@@ -55,8 +55,8 @@
                 </div>                   -->
                 <model-list-select :list="options_Type"  v-model.trim="$v.editData.type_id.$model" 
                                    :isError= $v.editData.type_id.$error                       
-                                   option-value="_id"
-                                   option-text="desc2"
+                                   option-value="type_id"
+                                   option-text="type_desc2"
                                    >                 
                 </model-list-select>
 
@@ -83,8 +83,8 @@
 
                 <model-list-select :list="options_Unit"  v-model.trim="$v.editData.unit_id.$model" 
                                    :isError= $v.editData.unit_id.$error                       
-                                   option-value="_id"
-                                   option-text="desc2"
+                                   option-value="unit_id"
+                                   option-text="unit_desc2"
                                    >                 
                 </model-list-select>
 
@@ -200,10 +200,10 @@ export default {
       saveText:"Save",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       editData:{
-        _id:"",
-        desc1:"",
-        desc2:"",
-        code:"",
+        item_id:"",
+        item_desc1:"",
+        item_desc2:"",
+        item_code:"",
         unit_id:"",
         type_id:"",
         model_no:"",
@@ -277,10 +277,10 @@ export default {
       if(this.operation=="add")
       {
           this.editData={
-                          _id:"",
-                          desc1:"",
-                          desc2:"",
-                          code:"",
+                          item_id:"",
+                          item_desc1:"",
+                          item_desc2:"",
+                          item_code:"",
                           unit_id:"",
                           type_id:"",
                           model_no:"",
@@ -305,7 +305,7 @@ export default {
           let self=this; 
           // if(this.photoFile){
           //       var fn=this.photoFile.name;
-          //       //fn=response.data.code+fn.substring(fn.indexOf("."))
+          //       //fn=response.data.item_code+fn.substring(fn.indexOf("."))
           //       fn="/assetsPhoto/"+'test.jpg'
           //       var FileSaver = require('file-saver');
           //       FileSaver.saveAs(this.photoFile, fn);
@@ -314,8 +314,8 @@ export default {
 
           this.$http.post(this.$parent.addLink,
                            {
-                             "desc1":self.editData.desc1, 
-                             "desc2":self.editData.desc2, 
+                             "item_desc1":self.editData.item_desc1, 
+                             "item_desc2":self.editData.item_desc2, 
                              "qty":self.editData.qty, 
                              "unit_id":self.editData.unit_id, 
                              "type_id":self.editData.type_id, 
@@ -357,10 +357,10 @@ export default {
           let self=this;   
           this.$http.post(this.$parent.updateLink,
                            {
-                              "_id":self.editData._id,
-                              "desc1":self.editData.desc1,
-                              "desc2":self.editData.desc2, 
-                              "code":self.editData.code,
+                              "item_id":self.editData.item_id,
+                              "item_desc1":self.editData.item_desc1,
+                              "item_desc2":self.editData.item_desc2, 
+                              "item_code":self.editData.item_code,
                               "qty":self.editData.qty, 
                               "unit_id":self.editData.unit_id, 
                               "type_id":self.editData.type_id, 
@@ -438,10 +438,10 @@ export default {
 
     setData(editRow){
                 this.editData={
-                          _id:editRow._id,
-                          desc1:editRow.desc1,
-                          desc2:editRow.desc2,
-                          code:editRow.code,
+                          item_id:editRow.item_id,
+                          item_desc1:editRow.item_desc1,
+                          item_desc2:editRow.item_desc2,
+                          item_code:editRow.item_code,
                           unit_id:editRow.unit_id,
                           type_id:editRow.type_id,
                           model_no:editRow.model_no,
@@ -514,10 +514,10 @@ export default {
   },
   validations: {
     editData: {
-      desc1:{
+      item_desc1:{
           required,
          },
-      desc2:{
+      item_desc2:{
         required
       },
       type_id:{

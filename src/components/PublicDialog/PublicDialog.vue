@@ -7,6 +7,8 @@
                             :cancel-title="cancelText"
                             :hide-header-close="isHideCloseButten"
                             :size="dialogSize"
+                            header-bg-variant="dark"
+                            header-text-variant="light"
                             >
      <b-alert
       :show="dismissCountDown"

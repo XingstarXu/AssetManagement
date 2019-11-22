@@ -31,9 +31,8 @@ export default {
             containerName:null,
             addLink:"http://192.168.12.26:9090/asset-sys/cre-wh/",
             updateLink:"http://192.168.12.26:9090/asset-sys/upd-wh/",
-            searchLink:"http://192.168.12.26:9090/asset-sys/sel-wh/",
-            checkCodeUnique:"http://192.168.12.26:9090/asset-sys/check-wh-code/",
-            textLink:"http://192.168.12.26:9090/asset-sys/tst-sel-wh/"
+            searchLink:"http://192.168.12.26:9090/asset-sys/sel-wh-for-table/",
+            checkCodeUnique:"http://192.168.12.26:9090/asset-sys/check-wh-code/"
 
         }
     },

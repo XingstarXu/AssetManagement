@@ -11,47 +11,74 @@
                            供應商:
                     </b-col>
                     <b-col lg="3">
-                            <model-list-select :list="options_Vendor"  v-model.trim="$v.editData.vendor_id.$model" 
-                                   :isError= "$v.editData.vendor_id.$error"             
-                                option-value="_id"
-                                option-text="desc2"
-                            
-                            >                 
-                            </model-list-select>
-                            <div v-if="$v.editData.vendor_id.$error" class="invalid-feedback d-block">
-                              <span>供應商是必要的</span>
-                            </div>                     
+
+                            <template v-if="isDisabled">
+                                {{editData.vendor_desc2}}
+
+                            </template>
+                            <template v-else>
+                                <model-list-select :list="options_Vendor"  v-model.trim="$v.editData.vendor_id.$model" 
+                                      :isError= "$v.editData.vendor_id.$error"             
+                                    option-value="vendor_id"
+                                    option-text="vendor_desc2"
+                                    :isDisabled="isDisabled"
+                                
+                                >                 
+                                </model-list-select>
+                                <div v-if="$v.editData.vendor_id.$error" class="invalid-feedback d-block">
+                                  <span>供應商是必要的</span>
+                                </div>                                    
+                            </template>                     
+                   
                     </b-col>
                     <b-col lg="2" style="text-align:right" >
                              入倉日期:                   
 
                     </b-col> 
                     <b-col lg="3">
-                          <b-form-input type="date" v-model.trim="$v.editData.trans_date.$model"
-                                   :class="{ 'is-invalid': $v.editData.trans_date.$error,'is-valid':!$v.editData.trans_date.$invalid }"
-                          ></b-form-input> 
-                          <div v-if="$v.editData.trans_date.$error" class="invalid-feedback d-block">
-                              <span>入倉時期是必要的</span>
-                          </div>                                       
+
+                            <template v-if="isDisabled">
+                                {{editData.trans_date}}
+
+                            </template>
+                            <template v-else>
+                                  <b-form-input type="date" v-model.trim="$v.editData.trans_date.$model"
+                                          :class="{ 'is-invalid': $v.editData.trans_date.$error,'is-valid':!$v.editData.trans_date.$invalid }"
+                                          :disabled="isDisabled"
+                                  ></b-form-input> 
+                                  <div v-if="$v.editData.trans_date.$error" class="invalid-feedback d-block">
+                                      <span>入倉時期是必要的</span>
+                                  </div>                                   
+                            </template>                        
+                                      
                     </b-col>                     
 
 
                   </b-row>
                   <b-row class="mb-3">
                      <b-col lg="2" style="text-align:right">
-                             發貨號:                   
-
+                             發票號:                   
                     </b-col>  
                     <b-col lg="3">
-                            <b-form-input v-model="editData.delivery_no" ></b-form-input>
+                            <template v-if="isDisabled">
+                                {{editData.invoice_no}}
+
+                            </template>
+                            <template v-else>
+                                  <b-form-input v-model.trim="$v.editData.invoice_no.$model" 
+                                            :class="{ 'is-invalid': $v.editData.invoice_no.$error,'is-valid':!$v.editData.invoice_no.$invalid }"
+                                            :disabled="isDisabled"
+                                  ></b-form-input>                                    
+                            </template>                       
+
 
                     </b-col> 
                      <b-col lg="2" style="text-align:right">
-                             發票號:                   
+                                              
 
                     </b-col>                   
                     <b-col lg="3">
-                              <b-form-input v-model="editData.invoice_no"></b-form-input>             
+         
                     </b-col> 
                   </b-row>
 
@@ -61,8 +88,14 @@
 
                     </b-col>                     
                      <b-col lg="8" >
+                            <template v-if="isDisabled">
+                                {{editData.remark}}
 
-                       <b-form-input v-model="editData.remark"></b-form-input>
+                            </template>
+                            <template v-else>
+                                  <b-form-input v-model="editData.remark" :disabled="isDisabled"></b-form-input>                                  
+                            </template> 
+                       
                   
 
                     </b-col>  
@@ -78,10 +111,13 @@
              <b-container>
                <b-row>
                   <b-col md=4>
-                    <b-button variant="success" align="right" @click="showNewDialog">
-                        <i class="far fa-plus-square"></i>
-                        新增入倉資產
-                    </b-button>
+                    <template v-if="!isDisabled">
+                        <b-button variant="success" align="right" @click="showNewDialog" :disabled="isDisabled">
+                            <i class="far fa-plus-square"></i>
+                            新增入倉資產
+                        </b-button>
+                    </template>
+
                   </b-col>
                   <!-- <b-col md=4 offset-md="4">
 
@@ -92,20 +128,24 @@
               </b-container>
           </template>
 
-          <template v-slot:diyColumn="myData">
-            <template v-if="isEdit(myData.data.index)">
 
-                  <!-- <b-button  variant="info" @click="editRow(myData)"><i class="fas fa-check"></i></b-button> -->
-                  <b-button  variant="success" @click="editRowOK(myData)" size="sm" >確認</b-button>
-                  <span>&nbsp; | &nbsp;</span>
-                  <b-button  variant="danger" @click="editRowCancel(myData)" size="sm" >取消</b-button>
-            </template>
-            <template v-else>
-                  <!-- <b-button  variant="info" @click="editRow(myData)"><i class="fas fa-edit"></i></b-button>   -->
-                  <b-button  variant="info" @click="editRow(myData)" id="v1" size="sm">編輯</b-button> 
-            </template>
-                
-          </template>
+
+              <template v-slot:diyColumn="myData">
+
+                  <template v-if="isEdit(myData.data.index)">
+                        <b-button  variant="success" @click="editRowOK(myData)" size="sm" >確認</b-button>
+                        <span>&nbsp; | &nbsp;</span>
+                        <b-button  variant="danger" @click="editRowCancel(myData)" size="sm" >取消</b-button>
+                  </template>
+                  <template v-else>
+                        <template v-if="isDisabled==false">
+                              <b-button  variant="info" @click="editRow(myData)" id="v1" size="sm" :disabled="isDisabled">編輯</b-button> 
+                        </template>
+                  </template>
+
+              </template>
+
+
           <template v-slot:diyColumn2="myData2">
             <template v-if="isEdit(myData2.data.index)">
                   <b-form-input v-model="myData2.data.item.qty" size="sm" @change="amtChange(myData2.data.item)"></b-form-input>
@@ -129,8 +169,8 @@
             <template v-if="isEdit(myData4.data.index)">
                   <!-- <b-form-input v-model="myData4.data.item.warehouse_desc2" size="sm"></b-form-input> -->
                   <model-list-select :list="options_warehouse"  v-model="myData4.data.item.warehouse_id"                 
-                    option-value="_id"
-                    option-text="desc2"
+                    option-value="warehouse_id"
+                    option-text="warehouse_desc2"
                     
                     >                 
                   </model-list-select>
@@ -152,6 +192,7 @@
           </template>      金額暫不處理-->
 
           <template v-slot:okbutten >
+              <template v-if="isSaveDisabled==false">
                  <b-button 
                            variant="primary"
                            size="sm"
@@ -161,7 +202,7 @@
                  >
                  {{saveText}}
                  </b-button>
-
+              </template>
           </template>
 
 
@@ -190,6 +231,7 @@ export default {
         delivery_no:"",
         remark:"",
         total_amt: 0,
+        qty:0,
         disable:0,
         update_by:"",
         create_by:""
@@ -258,6 +300,7 @@ export default {
                 invoice_no: "",
                 delivery_no: "",
                 total_amt: 0,
+                qty:0,
                 remark:"",
                 create_by: ""
               },
@@ -285,6 +328,7 @@ export default {
                 invoice_no: "",
                 delivery_no: "",
                 atotal_amt: 0,
+                qty:0,
                 remark:"",
                 update_by: ""
               },                
@@ -360,30 +404,41 @@ export default {
     },
     beforeOpen(){
         this.$v.$reset();
-        this.continueSaver=false;
-        this.isDisabled=true;  
-        this.editDisable_Disabled=false;   
         this.$refs.child.dialogSize="xl";
         this.$refs.child.tableColumns=this.columns;
-        //如果是新增時初始化變量
-        if(this.operation=="add")
-        {
+        switch (this.operation) {
+         case "add": //如果是新增時初始化變量
             this.editData={
-                trans_id:"",
-                code:"",
-                trans_date:"",
-                vendor_id:"",
-                invoice_no:"",
-                delivery_no:"",
-                remark:"",
-                total_amt: 0,
-                disable:0
-              }
+              trans_id:"",
+              code:"",
+              trans_date:"",
+              vendor_id:"",
+              invoice_no:"",
+              delivery_no:"",
+              remark:"",
+              total_amt: 0,
+              disable:0,
+              
+            }
 
-            this.isDisabled=false; 
+            this.isSaveDisabled=false;
             this.editDisable_Disabled=true; 
-            this.$refs.child.tableRows=[];
+            this.$refs.child.tableRows=[];  
+            this.isDisabled=false; //默認請況所有控件可以編輯         
+            break;
+          case "detalis": //如果是查詢詳細即禁止編輯
+            this.isDisabled=true; 
+            this.isSaveDisabled=true;//保存制禁用標識            
+            break;
+
+          default:
+            this.isSaveDisabled=false;//保存制禁用標識  
+            this.isDisabled=false; //默認請況所有控件可以編輯 
+            this.editDisable_Disabled=false;   
+            this.continueSaver=false;
+            break;
         }
+
         this.badingData();
         this.getWareHouse();
         this.getVendor();
@@ -392,17 +447,20 @@ export default {
 
     },
     setData(editRow,detailes){
+      //editRow.vendor_id.replace(/-/g,''),
+      console.log(editRow.vendor_id);
           this.editData={
                           trans_id: editRow._id,
                           code: editRow.code,
                           trans_date: editRow.trans_date,
-                          vendor_id: editRow.vendor_id.replace(/-/g,''),
+                          vendor_id: editRow.vendor_id,
                           vendor_desc1: editRow.vendor_desc1,
                           vendor_desc2: editRow.vendor_desc2,
                           invoice_no:editRow.invoice_no,
                           delivery_no:editRow.delivery_no,
                           remark:editRow.remark,
                           total_amt: editRow.total_amt,
+                          qty:editRow.qty,
                           disable:editRow.disable,
                           update_by:editRow.update_by
                         };
@@ -448,6 +506,7 @@ export default {
                   invoice_no:this.editData.invoice,
                   delivery_no:this.editData.delivery_no,
                   total_amt:0,
+                  qty:0,
                   remark:this.editData.remark,
                   create_by:"jx.xu"
                 };
@@ -456,6 +515,8 @@ export default {
           this.detailsRows.forEach(detilsItem=>{
             //統計入倉總金額
             this.header_new.total_amt=Number(this.header_new.total_amt)+Number(detilsItem.amt);
+            //統計入倉總數量
+            this.header_new.qty=Number(this.header_new.qty)+Number(detilsItem.qty);            
             //獲取倉的名稱資訊
             this.options_warehouse.forEach(warehouseItem=>{
               if(warehouseItem._id==detilsItem.warehouse_id){
@@ -467,7 +528,7 @@ export default {
           })                
         this.$http.post(this.$parent.addLink,
                         {
-                          "header":self.header_new, "details":self.detailsRows 
+                          "header":self.header_new, "details":self.detailsRows
                         })
                     .then(function(response){
                         if(response.data.code>0)
@@ -518,6 +579,7 @@ export default {
                   invoice_no:this.editData.invoice_no,
                   delivery_no:this.editData.delivery_no,
                   total_amt:0,
+                  qty:0,
                   remark:this.editData.remark,
                   update_by:"jx.xu"
                 };
@@ -526,6 +588,8 @@ export default {
           this.detailsRows.forEach(detilsItem=>{
             //統計入倉總金額
             this.header_update.total_amt=Number(this.header_update.total_amt)+Number(detilsItem.amt);
+            //統計入倉總數量
+            this.header_update.qty=Number(this.header_update.qty)+Number(detilsItem.qty);
             //獲取倉的名稱資訊
             this.options_warehouse.forEach(warehouseItem=>{
               if(warehouseItem._id==detilsItem.warehouse_id){
@@ -643,9 +707,13 @@ export default {
        editRowOK(item){
           this.editItem.editIndex=-1;
           //更新已選擇的倉庫名稱
+          console.clear();
+          console.log(item.data.item);
+           console.log(this.options_warehouse);
           this.options_warehouse.forEach(listItem=>{
-            if(listItem._id==item.data.item.warehouse_id){
-              item.data.item.warehouse_desc2=listItem.desc2;
+            if(listItem.warehouse_id==item.data.item.warehouse_id){
+              item.data.item.warehouse_desc1=listItem.warehouse_desc1;
+              item.data.item.warehouse_desc2=listItem.warehouse_desc2;
             }
           })
           this.$refs.child.unselectRow(item.data.index);
@@ -653,17 +721,7 @@ export default {
       },
       editRowCancel(item){
           this.editItem.editIndex=-1;
-          // this.$refs.child.tableRows.forEach(rowItem => {
-          //       if(rowItem.item_code==item.data.item.item_code){              
-          //         rowItem.qty=this.editItem.qtyValue;
-          //         rowItem.warehouse_id=this.editItem.warehouseIdValue;
-          //         rowItem.remark=this.editItem.remarkValue;
-          //         rowItem.price=this.editItem.priceValue;
-          //         rowItem.amt=this.editItem.amtValue;
-          //       }
-                
-          // });
-
+          //預先保存原有的值
           item.data.item.qty=this.editItem.qtyValue;
           item.data.item.warehouse_id=this.editItem.warehouseIdValue;
           item.data.item.remark=this.editItem.remarkValue;
@@ -691,7 +749,9 @@ export default {
       },
 
       amtChange(item){
+        item.qty=Number(item.qty);
         item.amt=item.qty*item.price;
+        
 
       }
 
@@ -705,7 +765,6 @@ export default {
   },
   mounted(){
     this.$refs.child.modal_titel="入倉管理";
-
     this.$refs.child.serverModel=false;//分頁時不會在DB時獲取數據
     this.$refs.trItemDialog.setModalDialogName("TransItemDialog");
     this.$refs.child.selectMode="single";
@@ -718,7 +777,12 @@ export default {
       },
       trans_date:{
         required
+      },
+      invoice_no:{
+        required
+
       }
+
      
                       
     },

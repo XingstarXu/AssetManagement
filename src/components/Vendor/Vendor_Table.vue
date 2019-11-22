@@ -19,7 +19,7 @@
             </template>
 
             <template v-slot:diyColumn="myItem">
-                  <b-button @click="showEditDialog(myItem.data.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+                  <b-button @click="showEditDialog(myItem.data.item,myItem.data.index)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
 
             
@@ -42,12 +42,12 @@ export default {
 
                         {
                             label: "供應商名稱(英)",
-                            key: "desc1",
+                            key: "vendor_desc1",
                             sortable: true,
                         },
                         {
                             label: "供應商名稱(中)",
-                            key: "desc2",
+                            key: "vendor_desc2",
                             sortable: true,
                         },
                         {
@@ -58,10 +58,6 @@ export default {
                             label:"郵箱",
                             key:"email"
 
-                        },
-                        {
-                            label:"是否停用",
-                            key:"disable",
                         },
                         {
                             label: "操作",
@@ -75,9 +71,9 @@ export default {
         }
     },
     methods:{
-       showEditDialog(editRow){
-           console.log(editRow);
-           this.$parent.$refs.veDialog.editData=editRow;
+       showEditDialog(editRow,index){
+           this.$refs.child.selectRow(index)
+           this.$parent.$refs.veDialog.setData(editRow);
            this.$parent.$refs.veDialog.operation="update";
            this.$bvModal.show('ModalDialog');
 
@@ -108,7 +104,6 @@ export default {
             this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"disable":myDisable,"order_by":"","order_desc":false})
                         .then(function(response){
                             let res=response.data;
-                            console.log(res.data);
                             self.$refs.child.rows = res.data
                             self.$refs.child.columns=self.columns
                             self.isLoading=false;
@@ -125,7 +120,15 @@ export default {
 
      textSearch(){
          this.badingData();
-     }
+     },
+     //停用或取消記錄時的行樣式
+     rowClass(item) {
+        
+        if (!item) return
+        if (item.disable === 1 ){
+            return 'table-danger'
+        } 
+     },
      
     },
     components:{

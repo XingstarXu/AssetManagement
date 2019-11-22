@@ -16,7 +16,7 @@
             </template>
 
             <template v-slot:diyColumn="myItem">
-                  <b-button @click="showEditDialog(myItem.data.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+                  <b-button @click="showEditDialog(myItem.data.item,myItem.data.index)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
            
         </publicTable>
@@ -32,18 +32,13 @@ export default {
                   ],
             columns: [ {
                             label: "單位名稱(英)",
-                            key: "desc1",
+                            key: "unit_desc1",
                             sortable: true,
                         },
                         {
                             label: "單位名稱(中)",
-                            key: "desc2",
+                            key: "unit_desc2",
                             sortable: true,
-                        },
-                        {
-                            label: "停用",
-                            key: "disable",
-                            
                         }, 
                         {
                             label:"操作",
@@ -56,9 +51,9 @@ export default {
         }
     },
     methods:{
-       showEditDialog(editRow){
-           console.log(editRow);
-           this.$parent.$refs.UnDialog.editData=editRow;
+       showEditDialog(editRow,index){
+           this.$refs.child.selectRow(index)
+           this.$parent.$refs.UnDialog.setData(editRow);
            this.$parent.$refs.UnDialog.operation="update";
            this.$bvModal.show('ModalDialog');
        },
@@ -96,7 +91,15 @@ export default {
 
      textSearch(){
          this.badingData();
-     }
+     },
+     //停用或取消記錄時的行樣式
+     rowClass(item) {
+        
+        if (!item) return
+        if (item.disable === 1 ){
+            return 'table-danger'
+        } 
+     },    
     },
     components:{
         publicTable

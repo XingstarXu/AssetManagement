@@ -9,10 +9,10 @@
                 label-align-sm="right"
                 label-for="nested-street"
             >
-                 <b-form-input v-model.trim="$v.editData.desc1.$model" :class="{ 'is-invalid': $v.editData.desc1.$error,'is-valid':!$v.editData.desc1.$invalid }"></b-form-input>
+                 <b-form-input v-model.trim="$v.editData.type_desc1.$model" :class="{ 'is-invalid': $v.editData.type_desc1.$error,'is-valid':!$v.editData.type_desc1.$invalid }"></b-form-input>
                   <div class="valid-feedback" >類型名稱(英)正確</div>
                   <div class="invalid-feedback">
-                      <span v-if="!$v.editData.desc1.required">類型名稱(中)必要的</span>
+                      <span v-if="!$v.editData.type_desc1.required">類型名稱(中)必要的</span>
                   </div>                
              </b-form-group>
 
@@ -22,10 +22,10 @@
                 label-align-sm="right"
                 label-for="nested-street"
             >
-                 <b-form-input v-model.trim="$v.editData.desc2.$model" :class="{ 'is-invalid': $v.editData.desc2.$error,'is-valid':!$v.editData.desc2.$invalid }"></b-form-input>
+                 <b-form-input v-model.trim="$v.editData.type_desc2.$model" :class="{ 'is-invalid': $v.editData.type_desc2.$error,'is-valid':!$v.editData.type_desc2.$invalid }"></b-form-input>
                   <div class="valid-feedback" >類型名稱(中)正確</div>
                   <div class="invalid-feedback">
-                      <span v-if="!$v.editData.desc2.required">類型名稱(英)必要的</span>
+                      <span v-if="!$v.editData.type_desc2.required">類型名稱(英)必要的</span>
                   </div>                
              </b-form-group>         
 
@@ -74,9 +74,9 @@ export default {
       saveText:"保存",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       editData:{
-        _id:"",
-        desc1:"",
-        desc2:"",
+        type_id:"",
+        type_desc1:"",
+        type_desc2:"",
         disable:0
 
       },
@@ -122,9 +122,9 @@ export default {
       if(this.operation=="add")
       {
           this.editData={
-                        _id:"",
-                        desc1:"",
-                        desc2:"",
+                        type_id:"",
+                        type_desc1:"",
+                        type_desc2:"",
                         disable:0
                         }
           this.isDisabled=false;  
@@ -135,7 +135,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.addLink,
                            {
-                              "desc1":self.editData.desc1, "desc2":self.editData.desc2, "create_by":"jx.xu"   
+                              "type_desc1":self.editData.type_desc1, "type_desc2":self.editData.type_desc2, "create_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -168,7 +168,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.updateLink,
                            {
-                              "_id":self.editData._id, "desc1":self.editData.desc1, "desc2":self.editData.desc2,  "disable":self.editData.disable,"update_by":"jx.xu"   
+                              "type_id":self.editData.type_id, "type_desc1":self.editData.type_desc1, "type_desc2":self.editData.type_desc2,  "disable":self.editData.disable,"update_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -196,7 +196,19 @@ export default {
                             self.saveText="保存"//保存制保存的字樣
                             self.$parent.$refs.tyTable.badingData();
                         })
-      },   
+      },
+      
+      
+      setData(editRow){
+                  this.editData={
+                            type_id:editRow.type_id,
+                            type_desc1:editRow.type_desc1,
+                            type_desc2:editRow.type_desc2,
+                            disable:editRow.disable
+
+                          }
+
+      },
  
   },
   components:{
@@ -209,10 +221,10 @@ export default {
   },
   validations: {
     editData: {
-      desc1:{
+      type_desc1:{
           required,
          },
-      desc2:{
+      type_desc2:{
         required
       }     
 

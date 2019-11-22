@@ -31,7 +31,7 @@ export default {
             containerName:null,
             addLink:"http://192.168.12.26:9090/asset-sys/cre-vdr/",
             updateLink:"http://192.168.12.26:9090/asset-sys/upd-vdr/",
-            searchLink:"http://192.168.12.26:9090/asset-sys/sel-vdr/",
+            searchLink:"http://192.168.12.26:9090/asset-sys/sel-vdr-for-table/",
 
 
         }

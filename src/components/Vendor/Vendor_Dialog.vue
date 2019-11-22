@@ -9,12 +9,12 @@
               label-for="nested-street"
              >                
                  <b-form-input 
-                   v-model.trim="$v.editData.desc1.$model" 
-                   :class="{ 'is-invalid': $v.editData.desc1.$error,'is-valid':!$v.editData.desc1.$invalid }"
+                   v-model.trim="$v.editData.vendor_desc1.$model" 
+                   :class="{ 'is-invalid': $v.editData.vendor_desc1.$error,'is-valid':!$v.editData.vendor_desc1.$invalid }"
                  ></b-form-input>
                   <div class="valid-feedback" >倉庫名稱(英文)正確</div>
                  <div class="invalid-feedback">
-                   <span v-if="!$v.editData.desc1.required">倉庫名稱(英文)必要的</span>
+                   <span v-if="!$v.editData.vendor_desc1.required">倉庫名稱(英文)必要的</span>
                  </div>                
              </b-form-group>
 
@@ -25,12 +25,12 @@
               label-for="nested-street"
              >               
                  <b-form-input 
-                   v-model.trim="$v.editData.desc2.$model"  
-                   :class="{ 'is-invalid': $v.editData.desc2.$error,'is-valid':!$v.editData.desc2.$invalid }"
+                   v-model.trim="$v.editData.vendor_desc2.$model"  
+                   :class="{ 'is-invalid': $v.editData.vendor_desc2.$error,'is-valid':!$v.editData.vendor_desc2.$invalid }"
                  ></b-form-input>
                 <div class="valid-feedback" >倉庫名稱(中文)正確</div>
                  <div class="invalid-feedback">
-                   <span v-if="!$v.editData.desc2.required">倉庫名稱(中文)必要的</span>
+                   <span v-if="!$v.editData.vendor_desc2.required">倉庫名稱(中文)必要的</span>
                  </div>                  
              </b-form-group>  
              
@@ -150,9 +150,9 @@ export default {
       saveText:"保存",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       editData:{
-        _id:"",
-        desc1:"",
-        desc2:"",
+        vendor_id:"",
+        vendor_desc1:"",
+        vendor_desc2:"",
         address:"",
         phone:"",
         email:"",
@@ -218,9 +218,9 @@ export default {
       if(this.operation=="add")
       {
           this.editData={
-            _id:"",
-            desc1:"",
-            desc2:"",
+            vendor_id:"",
+            vendor_desc1:"",
+            vendor_desc2:"",
             address:"",
             phone:"",
             email:"",
@@ -237,7 +237,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.addLink,
                            {
-                             "desc1":self.editData.desc1, "desc2":self.editData.desc2,"address":self.editData.address,"phone":self.editData.phone,"email":self.editData.email, "create_by":"jx.xu"   
+                             "vendor_desc1":self.editData.vendor_desc1, "vendor_desc2":self.editData.vendor_desc2,"address":self.editData.address,"phone":self.editData.phone,"email":self.editData.email, "create_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -270,7 +270,7 @@ export default {
           let self=this;         
           this.$http.post(this.$parent.updateLink,
                            {
-                             "_id": self.editData._id, "desc1":self.editData.desc1, "desc2":self.editData.desc2,"address":self.editData.address,"phone":self.editData.phone,"email":self.editData.email,"disable":self.editData.disable, "update_by":"jx.xu"   
+                             "vendor_id": self.editData.vendor_id, "vendor_desc1":self.editData.vendor_desc1, "vendor_desc2":self.editData.vendor_desc2,"address":self.editData.address,"phone":self.editData.phone,"email":self.editData.email,"disable":self.editData.disable, "update_by":"jx.xu"   
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -298,7 +298,18 @@ export default {
                             self.$parent.$refs.veTable.badingData();                            
                         })
       },      
+      setData(editRow){
+                  this.editData={
+                          vendor_id:editRow.vendor_id,
+                          vendor_desc1:editRow.vendor_desc1,
+                          vendor_desc2:editRow.vendor_desc2,
+                          address:editRow.address,
+                          phone:editRow.phone,
+                          email:editRow.email,
+                          disable:editRow.disable
 
+                          }
+     }
 
   },
   components:{
@@ -309,10 +320,10 @@ export default {
   },
   validations: {
     editData: {
-      desc1:{
+      vendor_desc1:{
         required
       },
-      desc2:{
+      vendor_desc2:{
         required
       },  
       address:{

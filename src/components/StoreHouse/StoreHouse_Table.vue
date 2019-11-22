@@ -19,7 +19,7 @@
             </template>
 
             <template v-slot:diyColumn="myItem">
-                  <b-button @click="showEditDialog(myItem.data.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+                  <b-button @click="showEditDialog(myItem.data.item,myItem.data.index)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
 
             
@@ -41,23 +41,19 @@ export default {
             columns: [
                         {
                             label: "倉庫編號",
-                            key: "code",
+                            key: "warehouse_code",
                             sortable: true,
                         },
                         {
                             label: "倉庫名稱(英)",
-                            key: "desc1",
+                            key: "warehouse_desc1",
                             sortable: true,
                         },
                         {
                             label: "倉庫名稱(中)",
-                            key: "desc2",
+                            key: "warehouse_desc2",
                             sortable: true,
                         }, 
-                        {
-                            label:"是否停用",
-                            key:"disable",
-                        },
                         {
                             label: "操作",
                             key: "opColumn",
@@ -70,9 +66,9 @@ export default {
         }
     },
     methods:{
-       showEditDialog(editRow){
-           console.log(editRow);
-           this.$parent.$refs.shDialog.editData=editRow;
+       showEditDialog(editRow,index){
+           this.$refs.child.selectRow(index)
+           this.$parent.$refs.shDialog.setData(editRow);
            this.$parent.$refs.shDialog.operation="update";
            this.$bvModal.show('ModalDialog');
 
@@ -119,7 +115,15 @@ export default {
 
      textSearch(){
          this.badingData();
-     }
+     },
+    //停用或取消記錄時的行樣式
+    rowClass(item) {
+        
+        if (!item) return
+        if (item.disable === 1 ){
+            return 'table-danger'
+        } 
+    },
      
     },
     components:{

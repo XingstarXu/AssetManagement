@@ -6,11 +6,14 @@
                             :cancel-disabled="cancelDisabled"
                             :cancel-title="cancelText"
                             :hide-header-close="isHideCloseButten"
+                            footer-bg-variant="light"
+                            header-bg-variant="danger"
+                            header-text-variant="light"
                             >
     
       <slot name="body"></slot>
 
-     <div slot="modal-footer" class="w-100" >
+     <div slot="modal-footer" class="w-100"  >
         <b-button
           variant="primary"
           size="sm"
@@ -51,11 +54,11 @@ export default {
 
     },
      //關閉對話框前時的處理
-     cardCloseDo(e){
+     cardCloseDo(bvModalEvt){
 
          if(!this.isAoutoClose)//如果不是手動關閉即不會關閉對話框（即防止點擊背景時自動關閉）
          {
-             e.cancel();
+             bvModalEvt.preventDefault();
              return;
          }
 

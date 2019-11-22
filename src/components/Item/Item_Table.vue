@@ -21,7 +21,7 @@
             </template>
 
             <template v-slot:diyColumn="myItem">
-                  <b-button @click="showEditDialog(myItem.data.item)" variant="info"><i class="fas fa-edit" ></i></b-button>
+                  <b-button @click="showEditDialog(myItem.data.item,myItem.data.index)" variant="info"><i class="fas fa-edit" ></i></b-button>
             </template>
 
             <template v-slot:photoColumn="myphoto">
@@ -40,38 +40,18 @@ export default {
             rows:[],
             columns: [{
                             label: "資產編號",
-                            key: "code",
+                            key: "item_code",
                             sortable: true,
                         },
                         {
                             label: "資產名稱(英)",
-                            key: "desc1",
+                            key: "item_desc1",
                             sortable: true,
                         },
                         {
                             label: "資產名稱(中)",
-                            key: "desc2",
+                            key: "item_desc2",
                             sortable: true,
-                        },
-                        {
-                            label: "資產類型",
-                            key: "type_id",
-                            sortable: true,
-                        }, 
-                        {
-                            label:"單位",
-                            key:"unit_id",
-                            
-                        },
-                        {
-                            label:"型號",
-                            key:"model_no",
-                            
-                        },
-                        {
-                            label:"ISO",
-                            key:"iso"
-                           
                         },
                         {
                             label:"數量",
@@ -100,7 +80,8 @@ export default {
         }
     },
     methods:{
-       showEditDialog(editRow){
+       showEditDialog(editRow,index){
+           this.$refs.child.selectRow(index);
            this.$parent.$refs.itDialog.setData(editRow);
            this.$parent.$refs.itDialog.operation="update";
            this.$bvModal.show('ModalDialog');
@@ -139,7 +120,15 @@ export default {
 
      textSearch(){
          this.badingData();
-     }
+     },
+     //停用或取消記錄時的行樣式
+     rowClass(item) {
+        
+        if (!item) return
+        if (item.disable === 1 ){
+            return 'table-danger'
+        } 
+     },
     },
     components:{
         publicTable
