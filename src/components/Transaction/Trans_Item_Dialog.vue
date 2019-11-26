@@ -5,7 +5,7 @@
           <template v-slot:body>
              <div>
                 <b-container class="bv-example-row">
-                  <b-row>
+                  <b-row class="mb-3">
                     <b-col>
                         <b-input-group prepend="搜索" class="mt-3" label-cols-sm="4">
                               <b-form-input v-model="search"></b-form-input>
@@ -22,20 +22,18 @@
           </template>
           <template v-slot:selectButton="myItem">
             <b-button @click="selectAll">頁全選</b-button>
-            <b-button @click="unSelectAll">取消全部選擇</b-button>
+            <b-button @click="unSelectAll" class="ml-3">取消全部選擇</b-button>
           </template>
-
           <template v-slot:okbutten >
-                 <b-button 
-                           variant="primary"
-                           size="sm"
-                           class="float-right"
-                           :disabled="isSaveDisabled"
-                           @click="saveData"
-                 >
-                 {{saveText}}  
-                 </b-button>
-
+                      <b-button 
+                                variant="primary"
+                                size="sm"
+                                class="float-right"
+                                :disabled="isSaveDisabled"
+                                @click="saveData"
+                      >
+                      {{saveText}}  
+                      </b-button>
           </template>
           
 
@@ -89,15 +87,15 @@ export default {
         ],
         search:"",
         selected:[],
-        sysSelecteds:[]
+        sysSelecteds:[],
+        importCount:0,
+
     }
   },
   methods:{
     saveData(){
-      console.clear();
-
-      
       let selItem={};    
+      this.importCount=0;
       this.selected.forEach(
         item=>{
           const rowsIds = this.$parent.$refs.child.tableRows.map(rowItem => rowItem.item_id);
@@ -113,44 +111,53 @@ export default {
           }
           else{
 
-             selItem={"item_id":item.item_id,"item_desc1":item.item_desc1,"item_desc2":item.item_desc2,"warehouse_id":item.warehouse_id,"warehouse_desc1":item.warehouse_desc1,"warehouse_desc2":item.warehouse_desc2,"qty":item.qty,"price":0,amt:0,"remark":"","create_by":""};
+             selItem={"item_id":item.item_id,"item_desc1":item.item_desc1,"item_desc2":item.item_desc2,"warehouse_id":item.warehouse_id,"warehouse_desc1":item.warehouse_desc1,"warehouse_desc2":item.warehouse_desc2,"qty":0,"price":0,amt:0,"remark":"","create_by":""};
              this.$parent.$refs.child.tableRows.push(selItem);
+             this.importCount=this.importCount+1;
           }
 
         }
       )
       this.$parent.$refs.child.tableConfig.totalRows=this.$parent.$refs.child.tableRows.length;
-      console.log(this.$parent.$refs.child.tableRows);
+      this.$parent.$refs.child.tableConfig.totalPage=Math.ceil(this.$parent.$refs.child.tableConfig.totalRows / this.$parent.$refs.child.tableConfig.perPage);
+      let msg="已選加入"+this.importCount+"資產。"
+      if(this.importCount<=0){
+        msg="沒有任何資產加入"
+        this.$refs.child.showAlert(msg,"danger");
+      }
+      else{
+        this.$refs.child.showAlert(msg,"success");
+
+      }
+      
+      
+       
 
     },
     beforeOpen(){
       //this.$v.$reset();
       this.continueSaver=false;
       this.$refs.child.dialogSize="lg";
+      this.$refs.child.tableRows=[];
+      this.selected=[];
+      this.$parent.$refs.child.tableRows.forEach(item=>{
+        this.selected.push(item);
+      });
+
+      
     },
 
       badingData(){
-              // this.rows=[{"item_id":"1","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v01","code":"fb001","desc2":"資產1","qty":3,"img":"圖片1"},
-              //     {"item_id":"2","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v02","code":"fb002","desc2":"資產2","qty":2,"img":"圖片2"},
-              //     {"item_id":"3","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v03","code":"fb003","desc2":"資產3","qty":5,"img":"圖片3"},
-              //     {"item_id":"4","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v04","code":"fb004","desc2":"資產4","qty":7,"img":"圖片4"},
-              //     {"item_id":"5","warehouse_code":"w001","warehouse_desc1":"IT","warehouse_desc2":"IT倉","vendor_code":"v05","code":"fb005","desc2":"資產5","qty":1,"img":"圖片5"},
-              //     {"item_id":"6","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb006","desc2":"資產6","qty":2,"img":"圖片6"},
-              //     {"item_id":"7","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb007","desc2":"資產7","qty":2,"img":"圖片7"},
-              //     {"item_id":"8","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb008","desc2":"資產8","qty":2,"img":"圖片8"},
-              //     {"item_id":"9","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb009","desc2":"資產9","qty":2,"img":"圖片9"},
-              //     {"item_id":"10","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v06","code":"fb010","desc2":"資產10","qty":1,"img":"圖片10"},
-              //     {"item_id":"11","warehouse_code":"w002","warehouse_desc1":"HR","warehouse_desc2":"HR倉","vendor_code":"v07","code":"fb011","desc2":"資產11","qty":8,"img":"圖片10"}                 
-              //   ];
             let self=this;
-            this.$http.post(this.$parent.$parent.getItemLink,{"search":this.search,"disable":0})
+            console.log(self.search);
+            this.$http.post(this.$parent.$parent.getItemLink,{"search":self.search,"disable":0})
                         .then(function(response){
                             let res=response.data;
-                            console.log(res);
                             self.$refs.child.tableRows = res.data
                             self.$refs.child.tableColumns=self.columns
                             self.isLoading=false;
                             self.$refs.child.tableConfig.totalRows=res.records;
+                            self.$refs.child.tableConfig.totalPage=Math.ceil(res.records / self.$refs.child.tableConfig.perPage);
 
                         })
                         .catch(function(error){
@@ -207,14 +214,15 @@ export default {
 
       },
       unSelectAll(){
-        this.$refs.child.unSelectAll();
         this.clearSelectCurrentPage();
+        this.$refs.child.unSelectAll();
+        
         
         
       },
       //清除所有當前頁面的選擇項
       clearSelectCurrentPage(){
-        this.rows.forEach(item => {
+        this.$refs.child.tableRows.forEach(item => {
             for(let i in this.selected){
                if (this.selected[i].item_id==item.item_id ) {
                     this.selected.splice(i, 1);
@@ -226,7 +234,7 @@ export default {
 
       },
       rowClass(){
-      },
+      }
            
 
   },

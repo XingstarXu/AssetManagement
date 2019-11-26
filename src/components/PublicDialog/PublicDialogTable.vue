@@ -7,24 +7,26 @@
                             :cancel-title="cancelText"
                             :hide-header-close="isHideCloseButten"
                             :size="dialogSize"
+                            header-bg-variant="primary"
+                            header-text-variant="light"
                             >
-     <b-alert
-      :show="dismissCountDown"
-      dismissible
-      :variant="alert_variant"
-      @dismissed="dismissCountDown=0"
-      @dismiss-count-down="countDownChanged"
-     >
-      {{alert_text}} {{ dismissCountDown }} seconds...
-     </b-alert>
+
       <b-container class="bv-example-row">
         <b-row>
           <b-col>
            <slot name="body"></slot>
           </b-col>
         </b-row>
-        <b-row>
-          <b-col>
+        <b-row >
+          <b-col style="text-align:left">
+                <div>
+                    總頁數  <b>{{tableConfig.totalPage}}</b>頁， 
+                    每頁顯示 <b>{{tableConfig.perPage}}</b>條記錄，
+                    總記錄數  <b>{{tableConfig.totalRows}}</b>條
+                </div>
+          </b-col>
+
+          <b-col style="text-align:right">
 
                 <slot name="diyButton">
 
@@ -57,21 +59,17 @@
                       :total-rows="tableConfig.totalRows"
                       :per-page="tableConfig.perPage"
                      
-                      align="left"
+                      align="right"
                       size="sm"
                       class="my-0"
-                      first-text="First"
-                      prev-text="Prev"
-                      next-text="Next"
-                      last-text="Last"
+                      first-text="<<"
+                      prev-text="<"
+                      next-text=">"
+                      last-text=">>"
                       
                       >
                       </b-pagination>
-                          <div>
-                          總頁數  <b>{{tableConfig.totalPage}}</b>頁， 
-                          每頁顯示 <b>{{tableConfig.perPage}}</b>條記錄，
-                          總記錄數  <b>{{tableConfig.totalRows}}</b>條
-                          </div>
+
                   </template>
                          
                    <template v-slot:cell(selectcolumn)="{item}">
@@ -137,18 +135,38 @@
       </b-container>
 
      <div slot="modal-footer" class="w-100" >
-        <b-button
-          variant="primary"
-          size="sm"
-          class="float-left"
-          :disabled="cancelDisabled"
-          @click="closeDialog"
-          >
-            關閉
-        </b-button>
-        <slot name="okbutten" :confirmData="confirmData">
-          
-        </slot>
+       <b-container>
+         <b-row>
+           <b-col cols="2" style="text-align:left">
+              <b-button
+                variant="danger"
+                size="md"
+                class="float-left"
+                :disabled="cancelDisabled"
+                @click="closeDialog"
+                >
+                  關閉
+              </b-button>
+           </b-col>
+           <b-col cols="8" style="text-align:center">
+              <b-alert
+                :show="dismissCountDown"
+                dismissible
+                :variant="alert_variant"
+                @dismissed="dismissCountDown=0"
+                @dismiss-count-down="countDownChanged"
+              >
+                {{alert_text}} {{ dismissCountDown }} seconds...
+              </b-alert>
+           
+           </b-col>
+           <b-col cols="2" style="text-align:right">
+              <slot name="okbutten" :confirmData="confirmData">
+                
+              </slot>
+           </b-col>
+          </b-row>
+        </b-container>
       </div>
 
   </b-modal>
@@ -186,7 +204,7 @@ export default {
       opTableColumn:"",
       myModalDialog:"ModalDialog",
       selectMode:"multi",
-      isSelectAll:0
+      isSelectAll:0,
     }
   },
   methods:{
@@ -196,6 +214,7 @@ export default {
        this.cancelDisabled=false;//禁用Cancel制標識
        this.isHideCloseButten=false;//顯示關閉制標識
        this.$parent.beforeOpen(e);//調用父窗體的方法，用來處理不同窗體特有的處理
+       this.dismissCountDown=0;//初始化提示的顯示
        
     },
      //關閉對話框前時的處理

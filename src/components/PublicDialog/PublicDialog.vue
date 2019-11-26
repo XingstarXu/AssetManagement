@@ -1,5 +1,5 @@
 <template>
-<div>
+<div >
   
   <b-modal id="ModalDialog" content-class="shadow" :title="modal_titel" @show="beforeOpen" @hide="cardCloseDo" 
                             @close="closeDialog" 
@@ -7,8 +7,9 @@
                             :cancel-title="cancelText"
                             :hide-header-close="isHideCloseButten"
                             :size="dialogSize"
-                            header-bg-variant="dark"
+                            header-bg-variant="primary"
                             header-text-variant="light"
+                            
                             >
      <b-alert
       :show="dismissCountDown"
@@ -19,12 +20,14 @@
      >
       {{alert_text}} {{ dismissCountDown }} seconds...
      </b-alert>
-      <slot name="body"></slot>
+     <div style="text-align:left">
+        <slot name="body" ></slot>
+     </div>
 
      <div slot="modal-footer" class="w-100" >
         <b-button
-          variant="primary"
-          size="sm"
+          variant="danger"
+          size="md"
           class="float-left"
           :disabled="cancelDisabled"
           @click="closeDialog"

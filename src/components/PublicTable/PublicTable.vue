@@ -25,7 +25,16 @@
 
         </b-row>
         <b-row class="mb-3">
-                <b-col md="12" style="text-align: right">
+
+                <b-col md="6" style="text-align: left">
+                     <div>
+                        總頁數  <b>{{config.totalPage}}</b>頁， 
+                        每頁顯示 <b>{{config.perPage}}</b>條記錄，
+                        總記錄數  <b>{{config.totalRows}}</b>條
+                     </div>                 
+                </b-col>
+
+                <b-col md="6" style="text-align: right">
                     <b-container fluid >
                         <b-row>
                             <b-col>
@@ -57,20 +66,16 @@
                     :total-rows="config.totalRows"
                     :per-page="config.perPage"
                     @change="pageChange"
-                    align="left"
+                    align="right"
                     size="sm"
                     class="my-0"
-                    first-text="First"
-                    prev-text="Prev"
-                    next-text="Next"
-                    last-text="Last"
+                    first-text="<<"
+                    prev-text="<"
+                    next-text=">"
+                    last-text=">>"
                     >
                     </b-pagination>
-                        <div>
-                        總頁數  <b>{{config.totalPage}}</b>頁， 
-                        每頁顯示 <b>{{config.perPage}}</b>條記錄，
-                        總記錄數  <b>{{config.totalRows}}</b>條
-                        </div>
+
                 </template>
                 <template v-slot:cell(opColumn)="data" >
                         <slot name="diyColumn" v-bind="{data}">

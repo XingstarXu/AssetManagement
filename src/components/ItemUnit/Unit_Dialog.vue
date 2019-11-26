@@ -49,7 +49,7 @@
           <template v-slot:okbutten >
                  <b-button 
                            variant="primary"
-                           size="sm"
+                           size="md"
                            class="float-right"
                            :disabled="isSaveDisabled"
                            @click="saveData"

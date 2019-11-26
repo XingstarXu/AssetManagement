@@ -56,7 +56,6 @@
                label="郵箱:"
                label-align-sm="right"
                label-for="nested-street"
-
              >
                <b-form-input
                   v-model.trim="$v.editData.email.$model"
@@ -105,6 +104,7 @@
                 :disabled="editDisable_Disabled"
                 value=1
                 unchecked-value=0
+                style="text-align:left"
                ></b-form-checkbox>
                <b-toast id="example-toast" title="BootstrapVue" static no-auto-hide variant="warning" solid>
                     <template v-slot:toast-title>
@@ -124,7 +124,7 @@
           <template v-slot:okbutten >
                  <b-button 
                            variant="primary"
-                           size="sm"
+                           size="md"
                            class="float-right"
                            :disabled="isSaveDisabled"
                            @click="saveData"

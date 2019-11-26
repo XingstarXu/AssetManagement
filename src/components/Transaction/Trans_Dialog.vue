@@ -109,8 +109,8 @@
           </template>
           <template v-slot:diyButton>
              <b-container>
-               <b-row>
-                  <b-col md=4>
+               <b-row class="mb-3" >
+                  <b-col>
                     <template v-if="!isDisabled">
                         <b-button variant="success" align="right" @click="showNewDialog" :disabled="isDisabled">
                             <i class="far fa-plus-square"></i>
@@ -148,7 +148,7 @@
 
           <template v-slot:diyColumn2="myData2">
             <template v-if="isEdit(myData2.data.index)">
-                  <b-form-input v-model="myData2.data.item.qty" size="sm" @change="amtChange(myData2.data.item)"></b-form-input>
+                  <b-form-input v-model="myData2.data.item.qty" size="sm" @change="amtChange(myData2.data.item)" type="number"></b-form-input>
             </template>
             <template v-else>
                   <p>{{myData2.data.item.qty}}</p>   
@@ -195,7 +195,7 @@
               <template v-if="isSaveDisabled==false">
                  <b-button 
                            variant="primary"
-                           size="sm"
+                           size="md"
                            class="float-right"
                            :disabled="isSaveDisabled"
                            @click="saveData"
@@ -503,7 +503,7 @@ export default {
                   vendor_id:this.editData.vendor_id,
                   vendor_desc1:this.editData.vendor_desc1,
                   vendor_desc2:this.editData.vendor_desc2,
-                  invoice_no:this.editData.invoice,
+                  invoice_no:this.editData.invoice_no,
                   delivery_no:this.editData.delivery_no,
                   total_amt:0,
                   qty:0,
@@ -707,9 +707,6 @@ export default {
        editRowOK(item){
           this.editItem.editIndex=-1;
           //更新已選擇的倉庫名稱
-          console.clear();
-          console.log(item.data.item);
-           console.log(this.options_warehouse);
           this.options_warehouse.forEach(listItem=>{
             if(listItem.warehouse_id==item.data.item.warehouse_id){
               item.data.item.warehouse_desc1=listItem.warehouse_desc1;
