@@ -47,6 +47,11 @@ export function createRouter(){
         path:'/trans',
         name:'trans',
         component:()=>import('../views/Transaction/Trans_Index')
+      },
+      {
+        path:'/transfer',
+        name:'transfer',
+        component:()=>import('../views/TransferTransaction/Transfer_Index')
       }
     ]
   })

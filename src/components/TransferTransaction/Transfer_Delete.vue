@@ -2,30 +2,8 @@
 <div>
   <publicDelete ref="child" >           
           <template v-slot:body>
-            <b-container>
-               <b-row>
-                 <b-col  lg="2">
-                </b-col>
-                 <b-col  lg="8">
-                   <h6>是否確認刪除{{deleteData.code}}入倉單？</h6>
-                 </b-col>
-               </b-row>
-               <b-row>
-                     <b-col lg="3" style="text-align:right">
-                             刪除原因:                   
-                    </b-col>                     
-                     <b-col lg="8" >
-                                  <b-form-input v-model="$v.deleteData.void_reason.$model"  
-                                                :class="{ 'is-invalid': $v.deleteData.void_reason.$error,'is-valid':!$v.deleteData.void_reason.$invalid }"
-                                  ></b-form-input> 
-                                   <div v-if="$v.deleteData.void_reason.$error" class="invalid-feedback d-block">
-                                      <span>刪除原因是必要的</span>
-                                  </div>                                                                   
-                    </b-col>                   
-               </b-row>
-            </b-container>
 
-              
+              <h6>是否確認刪除{{deleteData.code}}轉倉倉單？</h6>
 
           </template>
           <template v-slot:okbutten >
@@ -46,7 +24,6 @@
 </template>
 <script>
 import publicDelete from "../PublicDialog/PublicDelete"
-import { required } from 'vuelidate/lib/validators';
 export default {
   name:"shDelete",
   data(){
@@ -54,17 +31,13 @@ export default {
       saveText:"確認",//保存制名稱
       isSaveDisabled:false,//保存制禁用標識
       isDisabled:false,
-      deleteData:{_id:"", code:"", void_reason:""}
+      deleteData:{_id:"", code:""}
 
 
     }
   },
   methods:{
     saveData(){
-            this.$v.$touch();
-            if(this.$v.$invalid){
-               return;
-            }
             this.$refs.child.confirmData();//調用公用窗體的confirmData方法，用禁用相關的按鈕。
             this.$parent.isLoading=true;//啟動加載頁面
             this.saveText="Saveing...";//保存制正在保存中的字樣
@@ -73,10 +46,13 @@ export default {
             this.updateData();
     },
     updateData(){
+            
+          //alert(this.deleteData.code);
           let self=this;
+          console.log(self.deleteData._id);
           this.$http.post(this.$parent.voidLink,
                            {
-                              _id:self.deleteData._id,void_by:"jx.xu", void_reason: self.deleteData.void_reason
+                              transfer_id:self.deleteData._id,void_by:"jx.xu",void_reason:"xxxx"
                            })
                         .then(function(response){
                             if(response.data.code>0)
@@ -106,12 +82,11 @@ export default {
                         })
       },
       setData(deleteRow){
+            //editRow.vendor_id.replace(/-/g,''),
                 this.deleteData={
-                                _id: deleteRow.item.header._id,
-                                code: deleteRow.item.header.code,
-                                void_reason: deleteRow.item.header.void_reason
+                                tranfer_id: deleteRow.item.header._id,
+                                tranfer_code: deleteRow.item.header.code,
                               };
-                console.log(deleteRow);
           }      
  
   },
@@ -122,14 +97,6 @@ export default {
     this.$refs.child.modal_titel="取消訂單"
 
 
-  },
-  validations: {
-    deleteData: {
-      void_reason:{
-        required
-      }
-                     
-    },
   }
   
 }

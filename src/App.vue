@@ -12,7 +12,8 @@
               <router-link to="/itemType">Item Type</router-link>  |
               <router-link to="/itemUnit">Item Unit</router-link>  |
               <router-link to="/vendor">Vendor</router-link>|
-              <router-link to="/trans">Transaction</router-link>
+              <router-link to="/trans">Transaction</router-link>|
+              <router-link to="/transfer">Transfer</router-link>
            </div>
         </div>
       </div>
