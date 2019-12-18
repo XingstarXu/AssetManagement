@@ -27,6 +27,10 @@ import FontAwesomeIcon from '@fortawesome/vue-fontawesome'
 import solid from '@fortawesome/fontawesome-free-solid'
 import regular from '@fortawesome/fontawesome-free-regular'
 import brands from '@fortawesome/fontawesome-free-brands'
+import publicDialog from './Plugins/PublicDialog/index.js'
+import publicTable from './Plugins/PublicTable/index.js'
+
+
 
 
 fontawesome.library.add(solid)
@@ -34,6 +38,10 @@ fontawesome.library.add(regular)
 fontawesome.library.add(brands)
 
 Vue.component('font-awesome-icon',FontAwesomeIcon)
+Vue.use(publicDialog)
+Vue.use(publicTable)
+
+
 
 //導出一個工廠函數，用於創建新的應用程式、router 和 store 實列
 export function createApp(){

@@ -1,7 +1,6 @@
 <template>
 <div>
    <publicDialogTable ref="child" >    
-       
           <template v-slot:body>
              <div>
                 <b-container class="bv-example-row">
@@ -45,7 +44,6 @@
 
 </template>
 <script>
-import publicDialogTable from "../PublicDialog/PublicDialogTable"
 //import { required, minLength, helpers } from 'vuelidate/lib/validators'
 export default {
   name:"trDialog",
@@ -89,162 +87,156 @@ export default {
         selected:[],
         sysSelecteds:[],
         importCount:0,
+        parentTable:null
 
     }
   },
   methods:{
     saveData(){
-      let selItem={};    
-      this.importCount=0;
+      let selItem={}   
+      this.importCount=0
       this.selected.forEach(
         item=>{
-          const rowsIds = this.$parent.$refs.child.tableRows.map(rowItem => rowItem.item_id);
-          if(rowsIds.includes(item.item_id))
-          {
-            for(let i in this.$parent.$refs.child.tableRows){
-              if(this.$parent.$refs.child.tableRows[i].item_id==item.item_id){
-                //this.$parent.$refs.child.tableRows[i].qty+=item.qty;
-                break;
-              }
-            }
+                const rowsIds = this.$parent.$refs.child.tableRows.map(rowItem => rowItem.item_id)
+                if(rowsIds.includes(item.item_id))
+                {
+                  for(let i in this.$parent.$refs.child.tableRows){
+                    if(this.$parent.$refs.child.tableRows[i].item_id==item.item_id){
+                      //this.$parent.$refs.child.tableRows[i].qty+=item.qty;
+                      break;
+                    }
+                  }
 
-          }
-          else{
+                }
+                else{
 
-             selItem={"item_id":item.item_id,"item_desc1":item.item_desc1,"item_desc2":item.item_desc2,"warehouse_id":item.warehouse_id,"warehouse_desc1":item.warehouse_desc1,"warehouse_desc2":item.warehouse_desc2,"qty":0,"price":0,amt:0,"remark":"","create_by":""};
-             this.$parent.$refs.child.tableRows.push(selItem);
-             this.importCount=this.importCount+1;
-          }
+                  selItem={"item_id":item.item_id,"item_desc1":item.item_desc1,"item_desc2":item.item_desc2,"warehouse_id":item.warehouse_id,"warehouse_desc1":item.warehouse_desc1,"warehouse_desc2":item.warehouse_desc2,"qty":0,"price":0,amt:0,"remark":"","create_by":""}
+                  this.$parent.$refs.child.tableRows.push(selItem)
+                  this.importCount=this.importCount+1
+                }
 
         }
       )
-      this.$parent.$refs.child.tableConfig.totalRows=this.$parent.$refs.child.tableRows.length;
-      this.$parent.$refs.child.tableConfig.totalPage=Math.ceil(this.$parent.$refs.child.tableConfig.totalRows / this.$parent.$refs.child.tableConfig.perPage);
+      this.$parent.$refs.child.tableConfig.totalRows=this.$parent.$refs.child.tableRows.length
+      this.$parent.$refs.child.tableConfig.totalPage=Math.ceil(this.$parent.$refs.child.tableConfig.totalRows / this.$parent.$refs.child.tableConfig.perPage)
       let msg="已選加入"+this.importCount+"資產。"
       if(this.importCount<=0){
         msg="沒有任何資產加入"
-        this.$refs.child.showAlert(msg,"danger");
+        this.$refs.child.showAlert(msg,"danger")
       }
       else{
-        this.$refs.child.showAlert(msg,"success");
+        this.$refs.child.showAlert(msg,"success")
 
       }
-      
-      
-       
-
     },
     beforeOpen(){
       //this.$v.$reset();
-      this.continueSaver=false;
-      this.$refs.child.dialogSize="lg";
-      this.$refs.child.tableRows=[];
-      this.selected=[];
-      this.$parent.$refs.child.tableRows.forEach(item=>{
-        this.selected.push(item);
+      this.continueSaver=false
+      this.$refs.child.dialogSize="lg"
+      this.$refs.child.tableRows=[]
+      this.selected=[]
+      this.$parent.$refs.child.tableRows.forEach(
+           item=>{
+                this.selected.push(item)
       });
-
+      this.$refs.child.tableConfig.totalRows=this.$refs.child.tableRows.length
+      this.$refs.child.tableConfig.totalPage=Math.ceil(this.$refs.child.tableConfig.totalRows / this.$refs.child.tableConfig.perPage)
       
     },
 
-      badingData(){
-            let self=this;
-            console.log(self.search);
+    badingData(){
+            let self=this
             this.$http.post(this.$parent.$parent.getItemLink,{"search":self.search,"disable":0})
                         .then(function(response){
-                            let res=response.data;
+                            let res=response.data
                             self.$refs.child.tableRows = res.data
                             self.$refs.child.tableColumns=self.columns
-                            self.isLoading=false;
-                            self.$refs.child.tableConfig.totalRows=res.records;
-                            self.$refs.child.tableConfig.totalPage=Math.ceil(res.records / self.$refs.child.tableConfig.perPage);
+                            self.isLoading=false
+                            self.$refs.child.tableConfig.totalRows=res.records
+                            self.$refs.child.tableConfig.totalPage=Math.ceil(res.records / self.$refs.child.tableConfig.perPage)
 
                         })
                         .catch(function(error){
-                            console.log(error);
-                            self.isLoading=false;
+                            console.log(error)
+                            self.isLoading=false
                         })
         
       },
 
-     textSearch(){
-         this.badingData();
+    textSearch(){
+         this.badingData()
      },
-     setModalDialogName(strName){
-       this.$refs.child.myModalDialog=strName;
+    setModalDialogName(strName){
+       this.$refs.child.myModalDialog=strName
      },
 
-      onRowClicked(item){
+    onRowClicked(item){
         for(let i in this.selected){
           if(this.selected[i].item_id==item.item_id){
-            this.selected.splice(i, 1);
+            this.selected.splice(i, 1)
             break;
           }
         }
       },
-      onRowSelected(items){
+    onRowSelected(items){
         if(this.selected.length==0){
            items.forEach(item => {
              this.selected.push(item)
           })         
         }else{
           items.forEach(item => {
-                const selectedIds = this.selected.map(selectedItem => selectedItem.item_id);
+                const selectedIds = this.selected.map(selectedItem => selectedItem.item_id)
                 if (!selectedIds.includes(item.item_id) ) {
                   this.selected.push(item)
                 }
           })
         }
-        this.sysSelecteds=items;
+        this.sysSelecteds=items
 
 
       },
-      isSelected(citem){
-        let re=false;
-        const selectedIds = this.selected.map(selectedItem => selectedItem.item_id);
+    isSelected(citem){
+        let re=false
+        const selectedIds = this.selected.map(selectedItem => selectedItem.item_id)
         if(selectedIds.includes(citem.item_id))
         {
-          re=true;
+          re=true
         }
-        return re;
+        return re
 
       },
-      selectAll(){
-        this.$refs.child.selectAll();
+    selectAll(){
+        this.$refs.child.selectAll()
 
       },
-      unSelectAll(){
-        this.clearSelectCurrentPage();
-        this.$refs.child.unSelectAll();
-        
-        
-        
+    unSelectAll(){
+        this.clearSelectCurrentPage()
+        this.$refs.child.unSelectAll()
       },
-      //清除所有當前頁面的選擇項
-      clearSelectCurrentPage(){
+    //清除所有當前頁面的選擇項
+    clearSelectCurrentPage(){
         this.$refs.child.tableRows.forEach(item => {
             for(let i in this.selected){
                if (this.selected[i].item_id==item.item_id ) {
-                    this.selected.splice(i, 1);
-                    break;
+                    this.selected.splice(i, 1)
+                    break
                     
                 }
             }
         })
 
       },
-      rowClass(){
+    rowClass(){
       }
            
 
   },
   components:{
-    publicDialogTable
 
   },
   mounted(){
-    this.$refs.child.modal_titel="入倉資產選擇";
-    this.$refs.child.tableColumns=this.columns;
+    this.$refs.child.modal_titel="入倉資產選擇"
+    this.$refs.child.tableColumns=this.columns
   },
   // validations: {
   //   editData: {

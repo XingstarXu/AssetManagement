@@ -5,6 +5,12 @@
 
         <publicTable ref="child" >
             <template v-slot:searchAdd>
+                    <b-input-group prepend="搜索" class="mt-3">
+                        <b-form-input v-model="searchText" @input="setValue($event)"></b-form-input>
+                        <b-input-group-append>
+                        <b-button variant="outline-success" @click="textSearch" >Search</b-button>
+                        </b-input-group-append>
+                    </b-input-group>                 
                     <b-input-group prepend="篩選" class="mt-3">
                         <b-input-group-append is-text>
                         <b-form-select v-model="isVoid" :options="disableOptions" @change="textSearch"></b-form-select>
@@ -36,10 +42,6 @@
    </div>
 </template>
 <script>
-import publicTable from '../PublicTable/PublicTable';
-
-
-
 export default {
     name:'Vendor',
     data(){
@@ -73,7 +75,10 @@ export default {
 
                 isVoid:-1,
                 disableOptions:[{value:1 ,text:"無效單"},{value:0 ,text:"正常單"},{value:-1 ,text:"全部"}],
-                searchDate:""
+                searchDate:"",
+                searchText:"",
+                searchLink:"",
+                searchData:{},  
         }
     },
     methods:{
@@ -81,63 +86,48 @@ export default {
            
            this.$parent.$refs.trDialog.setData(editRow.item.header,editRow.item.details);
         //    this.$parent.$refs.trDialog.editData=editRow;
-           this.$parent.$refs.trDialog.operation="update";
-           this.$bvModal.show('ModalDialog');
+           this.$parent.$refs.trDialog.operation="update"
+           this.$bvModal.show('ModalDialog')
 
            
 
        },
        showNewDialog(){
            this.$parent.$refs.trDialog.operation="add"
-           this.$bvModal.show('ModalDialog');
+           this.$bvModal.show('ModalDialog')
 
 
 
        },
        showDelete(deleteRow){
-           this.$refs.child.selectRow(deleteRow.index);
-           this.$parent.$refs.trDelete.setData(deleteRow);  
-           this.$bvModal.show('ModalDelete');
+           this.$refs.child.selectRow(deleteRow.index)
+           this.$parent.$refs.trDelete.setData(deleteRow)
+           this.$bvModal.show('ModalDelete')
 
 
 
        },
        showDetailsDialog(editRow){
-           
-           this.$parent.$refs.trDialog.setData(editRow.item.header,editRow.item.details);
-           this.$parent.$refs.trDialog.operation="detalis";
-           this.$bvModal.show('ModalDialog');
+           this.$parent.$refs.trDialog.setData(editRow.item.header,editRow.item.details)
+           this.$parent.$refs.trDialog.operation="detalis"
+           this.$bvModal.show('ModalDialog')
 
            
 
        },
-       badingData(){
-            let self=this; 
-  
-            let myCurrentPage=self.$refs.child.config.currentPage;
-            let myPerPage=self.$refs.child.config.perPage;
-            let mySearch=self.$refs.child.config.search;
-            let mySearchDate=self.searchDate;
-            let myisVoid=self.isVoid;
-            self.isLoading=true;
-            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"order_by":"","order_desc":false,"trans_date":mySearchDate,"void":myisVoid})
-                        .then(function(response){                           
-                            let res=response.data;
-                            self.$refs.child.rows = res.data
-                            self.$refs.child.columns=self.columns
-                            self.isLoading=false;
-                            self.$refs.child.config.totalPage=res.total_page;  
-                            self.$refs.child.config.totalRows=res.records;
-                        })
-                        .catch(function(error){
-                            console.log(error);
-                            self.isLoading=false;
-                        })
-       },
-
 
       textSearch(){
-         this.badingData();
+            this.searchLink=this.$parent.searchLink
+            this.searchData={
+                    "page":this.$refs.child.config.currentPage,
+                    "num_of_page":this.$refs.child.config.perPage,
+                    "search":this.searchText,
+                    "order_by":"",
+                    "order_desc":false,
+                    "trans_date":this.searchDate,
+                    "void":this.isVoid
+            }
+            this.$refs.child.badingData(this);//調用公用表的綁定方法
       },
       //停用或取消記錄時的行樣式
       rowClass(item) {
@@ -152,9 +142,9 @@ export default {
       changeVariant(isVoid){
           let ren="";
           if(isVoid==1){
-              ren="secondary";
+              ren="secondary"
           }else{
-              ren="danger";
+              ren="danger"
           }
           return ren;
 
@@ -162,14 +152,13 @@ export default {
 
     },
     components:{
-        publicTable
 
     },
     mounted:function(){
-        this.$refs.child.columns=this.columns;
+        this.$refs.child.columns=this.columns
         //this.$refs.child.opColumn="trans_id"//設置操作列
         this.$refs.child.config.title="入倉管理"
-        this.badingData();
+        this.textSearch()
 
         
     },

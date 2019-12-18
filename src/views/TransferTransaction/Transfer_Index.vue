@@ -8,24 +8,24 @@
     
     >
     </loading>
-    <TransTable ref="ttTable"/>
-    <TransDialog ref="ttDialog"/>
-    <TransDelete ref="ttDelete"/>
+    <TransferTable ref="ttTable"/>
+    <TransferDialog ref="ttDialog"/>
+    <TransferDelete ref="ttDelete"/>
 
     
 </div>
 </template>
 
 <script>
-import TransTable from "../../components/TransferTransaction/Transfer_Table";
-import TransDialog from "../../components/TransferTransaction/Transfer_Dialog";
-import TransDelete from "../../components/TransferTransaction/Transfer_Delete";
+import TransferTable from "../../components/TransferTransaction/Transfer_Table";
+import TransferDialog from "../../components/TransferTransaction/Transfer_Dialog";
+import TransferDelete from "../../components/TransferTransaction/Transfer_Delete";
 
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 
 export default {
-    name:"sh_index",
+    name:"tt_index",
     data(){
         return{
             isLoading: false,
@@ -42,9 +42,9 @@ export default {
         }
     },
     components:{
-        TransTable,
-        TransDialog,
-        TransDelete,
+        TransferTable,
+        TransferDialog,
+        TransferDelete,
         Loading
 
     }

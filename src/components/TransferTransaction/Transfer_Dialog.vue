@@ -1,140 +1,114 @@
 <template>
 <div>
-  <transItemDialog ref="ttItemDialog"/>
+  <transferItemDialog ref="ttItemDialog"/>
   <publicDialogTable ref="child" >           
           <template v-slot:body>
              <div>
-                <b-container class="bv-example-row">
-                  <b-row align-h="start" class="mb-3">
+                 <b-container class="bv-example-row">
+                      <b-row align-h="start" class="mb-3">
+                            <b-col lg="2" style="text-align:right">
+                                  原倉庫:
+                            </b-col>
+                            <b-col lg="3">
+                                  <template v-if="isDisabled">
+                                        {{editData.from_wh_desc2}}
+                                  </template>
+                                  <template v-else>
+                                        <model-list-select 
+                                            :list="options_from_warehouse"  
+                                            v-model.trim="$v.editData.from_wh_id.$model" 
+                                            :isError= "$v.editData.from_wh_id.$error"             
+                                            option-value="warehouse_id"
+                                            option-text="warehouse_desc2"
+                                            :isDisabled="isDisabled" 
+                                        >                 
+                                        </model-list-select>
+                                        <div class="invalid-feedback d-block">
+                                            <span v-if="$v.editData.from_wh_id.$required">原倉庫是必要的</span>
+                                            <span v-if="$v.editData.from_wh_id.isSame">原倉庫與轉至倉庫不能相同</span>
+                                        </div>                                     
+                                  </template>                    
+                            </b-col>
+                            <b-col lg="2" style="text-align:right" >
+                                    轉至倉庫:                 
+                            </b-col> 
+                            <b-col lg="3">
+                                  <template v-if="isDisabled">
+                                        {{editData.to_wh_desc2}}
+                                  </template>
+                                  <template v-else>
+                                        <model-list-select :list="options_to_warehouse"  
+                                        v-model.trim="$v.editData.to_wh_id.$model" 
+                                        :isError= "$v.editData.to_wh_id.$error"             
+                                        option-value="warehouse_id"
+                                        option-text="warehouse_desc2"
+                                        :isDisabled="isDisabled"
+                                        
+                                        >                 
+                                        </model-list-select>
+                                        <div  class="invalid-feedback d-block">
+                                          <span v-if="$v.editData.to_wh_id.$required">轉至倉庫是必要的</span>
+                                          <span v-if="$v.editData.to_wh_id.isSame">轉至倉庫與原倉庫不能相同</span>
+                                        </div>                                    
+                                  </template>                        
+                            </b-col>                     
+                      </b-row>
+                      <b-row class="mb-3">
+                            <b-col lg="2" style="text-align:right">
+                                  轉倉日期:                       
+                            </b-col>  
+                            <b-col lg="3">
+                                    <template v-if="isDisabled">
+                                        {{editData.transfer_date}}
+                                    </template>
+                                    <template v-else>
+                                          <b-form-input type="date" v-model.trim="$v.editData.transfer_date.$model"
+                                                  :class="{ 'is-invalid': $v.editData.transfer_date.$error,'is-valid':!$v.editData.transfer_date.$invalid }"
+                                                  :disabled="isDisabled"
+                                          ></b-form-input> 
+                                          <div v-if="$v.editData.transfer_date.$error" class="invalid-feedback d-block">
+                                              <span>轉倉日期是必要的</span>
+                                          </div>                                   
+                                    </template>                        
+                            </b-col> 
+                            <b-col lg="2" style="text-align:right">
+                            </b-col>                   
+                            <b-col lg="3">
+                            </b-col> 
+                      </b-row>
 
-                    <b-col lg="2" style="text-align:right">
-                           原倉庫:
-                    </b-col>
-                    <b-col lg="3">
-
-                            <template v-if="isDisabled">
-                                {{editData.from_wh_desc2}}
-
-                            </template>
-                            <template v-else>
-                                <model-list-select :list="options_from_warehouse"  v-model.trim="$v.editData.from_wh_id.$model" 
-                                      :isError= "$v.editData.from_wh_id.$error"             
-                                    option-value="from_wh_id"
-                                    option-text="from_wh_desc2"
-                                    :isDisabled="isDisabled"
-                                
-                                >                 
-                                </model-list-select>
-                                <div v-if="$v.editData.from_wh_id.$error" class="invalid-feedback d-block">
-                                  <span>原倉庫是必要的</span>
-                                </div>                                    
-                            </template>                     
-                   
-                    </b-col>
-                    <b-col lg="2" style="text-align:right" >
-                             轉至倉庫:                 
-
-                    </b-col> 
-                    <b-col lg="3">
-                             <template v-if="isDisabled">
-                                {{editData.to_wh_desc2}}
-
-                            </template>
-                            <template v-else>
-                                <model-list-select :list="options_to_warehouse"  v-model.trim="$v.editData.to_wh_id.$model" 
-                                      :isError= "$v.editData.to_wh_id.$error"             
-                                    option-value="to_wh_id"
-                                    option-text="to_wh_desc2"
-                                    :isDisabled="isDisabled"
-                                
-                                >                 
-                                </model-list-select>
-                                <div v-if="$v.editData.to_wh_id.$error" class="invalid-feedback d-block">
-                                  <span>轉至倉庫是必要的</span>
-                                </div>                                    
-                            </template>                        
-                                      
-                    </b-col>                     
-
-
-                  </b-row>
-                  <b-row class="mb-3">
-                     <b-col lg="2" style="text-align:right">
-                           轉倉日期:                       
-                    </b-col>  
-                    <b-col lg="3">
-
-                            <template v-if="isDisabled">
-                                {{editData.transfer_date}}
-
-                            </template>
-                            <template v-else>
-                                  <b-form-input type="date" v-model.trim="$v.editData.transfer_date.$model"
-                                          :class="{ 'is-invalid': $v.editData.transfer_date.$error,'is-valid':!$v.editData.transfer_date.$invalid }"
-                                          :disabled="isDisabled"
-                                  ></b-form-input> 
-                                  <div v-if="$v.editData.transfer_date.$error" class="invalid-feedback d-block">
-                                      <span>轉倉日期是必要的</span>
-                                  </div>                                   
-                            </template>                        
-                   
-
-
-                    </b-col> 
-                     <b-col lg="2" style="text-align:right">
-                                              
-
-                    </b-col>                   
-                    <b-col lg="3">
-         
-                    </b-col> 
-                  </b-row>
-
-                  <b-row align-h="start" class="mb-3">
-                     <b-col lg="2" style="text-align:right">
-                             備註:                   
-
-                    </b-col>                     
-                     <b-col lg="8" >
-                            <template v-if="isDisabled">
-                                {{editData.remark}}
-
-                            </template>
-                            <template v-else>
-                                  <b-form-input v-model="editData.remark" :disabled="isDisabled"></b-form-input>                                  
-                            </template> 
-                       
-                  
-
-                    </b-col>  
- 
-                  </b-row>
-               
-                </b-container>               
+                      <b-row align-h="start" class="mb-3">
+                            <b-col lg="2" style="text-align:right">
+                                    備註:                   
+                            </b-col>                     
+                            <b-col lg="10" >
+                                      <template v-if="isDisabled">
+                                          {{editData.remark}}
+                                      </template>
+                                      <template v-else>
+                                            <b-form-input v-model="editData.remark" :disabled="isDisabled"></b-form-input>                                  
+                                      </template> 
+                            </b-col>  
+                      </b-row>
+                </b-container>                
              </div>
-
-
           </template>
           <template v-slot:diyButton>
              <b-container>
-               <b-row class="mb-3" >
-                  <b-col>
-                    <template v-if="!isDisabled">
-                        <b-button variant="success" align="right" @click="showNewDialog" :disabled="isDisabled">
-                            <i class="far fa-plus-square"></i>
-                            新增轉倉資產
-                        </b-button>
-                    </template>
-
-                  </b-col>
-               </b-row>
+                  <b-row class="mb-3" >
+                      <b-col>
+                          <template v-if="!isDisabled">
+                              <b-button variant="success" align="right" @click="showNewDialog" :disabled="isDisabled">
+                                  <i class="far fa-plus-square"></i> 
+                                  新增轉倉資產
+                              </b-button> 
+                          </template>
+                      </b-col>
+                  </b-row>
               </b-container>
           </template>
 
-
-
-              <template v-slot:diyColumn="myData">
-
+          <template v-slot:diyColumn="myData">
                   <template v-if="isEdit(myData.data.index)">
                         <b-button  variant="success" @click="editRowOK(myData)" size="sm" >確認</b-button>
                         <span>&nbsp; | &nbsp;</span>
@@ -143,29 +117,29 @@
                   <template v-else>
                         <template v-if="isDisabled==false">
                               <b-button  variant="info" @click="editRow(myData)" id="v1" size="sm" :disabled="isDisabled">編輯</b-button> 
+                              <b-button class="ml-3" variant="danger" @click="deleteShow(myData)" id="v1" size="sm" :disabled="isDisabled">刪除</b-button>
                         </template>
                   </template>
 
-              </template>
+          </template>
 
 
           <template v-slot:diyColumn2="myData2">
-            <template v-if="isEdit(myData2.data.index)">
-                  <b-form-input v-model="myData2.data.item.qty" size="sm" @change="amtChange(myData2.data.item)" type="number"></b-form-input>
-            </template>
-            <template v-else>
-                  <p>{{myData2.data.item.qty}}</p>   
-            </template>
-
+                <template v-if="isEdit(myData2.data.index)">
+                      <b-form-input v-model="myData2.data.item.qty" size="sm" @change="amtChange(myData2.data.item)" type="number"></b-form-input>
+                </template>
+                <template v-else>
+                      <p>{{myData2.data.item.qty}}</p>   
+                </template>
           </template>
 
           <template v-slot:diyColumn3="myData3">
-            <template v-if="isEdit(myData3.data.index)">
-                  <b-form-input v-model="myData3.data.item.remark" size="sm" ></b-form-input>
-            </template>
-            <template v-else>
-                  <p>{{myData3.data.item.remark}}</p>   
-            </template>
+                <template v-if="isEdit(myData3.data.index)">
+                      <b-form-input v-model="myData3.data.item.remark" size="sm" ></b-form-input>
+                </template>
+                <template v-else>
+                      <p>{{myData3.data.item.remark}}</p>   
+                </template>
           </template>
 
           <template v-slot:okbutten >
@@ -181,20 +155,44 @@
                  </b-button>
               </template>
           </template>
-
-
   </publicDialogTable>
+
+<!--資產項目刪除對話框-->
+  <publicDelete ref="delItem" >           
+          <template v-slot:body>
+            <b-container>
+               <b-row>
+                 <b-col  lg="2">
+                </b-col>
+                 <b-col  lg="8">
+                   <h6>{{delMsg}}</h6>
+                 </b-col>
+               </b-row>
+            </b-container>
+          </template>
+          <template v-slot:okbutten >
+                 <b-button variant="primary"
+                           size="sm"
+                           class="float-right"
+                           :disabled="isSaveDisabled"
+                           @click="deleteRow"
+                 >
+                 確定
+                 </b-button>
+          </template>
+  </publicDelete>
+
+
   <!-- {{$v}} -->
 
 </div>
 </template>
 <script>
-import publicDialogTable from "../PublicDialog/PublicDialogTable";
-import transItemDialog from "../../components/Transaction/Trans_Item_Dialog";
-import { ModelListSelect } from 'vue-search-select';
-import { required } from 'vuelidate/lib/validators';
+import transferItemDialog from "./Transfer_Item_Dialog";
+import {ModelListSelect}  from 'vue-search-select';
+import  {required}  from 'vuelidate/lib/validators';
 export default {
-  name:"trDialog",
+  name:"ttDialog",
   data(){
     return{
       saveText:"保存",//保存制名稱
@@ -296,7 +294,9 @@ export default {
                 remark: "",
                 update_by: ""
                },
-
+          parentTable:null,
+          delMsg:"",
+          deleteItem:{}
 
       
 
@@ -354,26 +354,26 @@ export default {
     },
     beforeOpen(){
         this.$v.$reset();
-        this.$refs.child.dialogSize="xl";
-        this.$refs.child.tableColumns=this.columns;
+        this.$refs.child.dialogSize="xl"
+        this.$refs.child.tableColumns=this.columns
+        let newDate=new Date()
         switch (this.operation) {
          case "add": //如果是新增時初始化變量
             this.editData={
               transfer_header_id:"",
               transfer_code:"",
-              trans_date:"",
               from_wh_id:"",
               from_wh_desc1:"",
               from_wh_desc2:"",
               to_wh_id:"",
               to_wh_desc1:"",
               to_wh_desc2:"",
+              transfer_date:newDate.toISOString().slice(0,10),
               remark:"",
               qty:0,
               disable:0,
               update_by:"",
               create_by:""
-              
             }
 
             this.isSaveDisabled=false;
@@ -420,19 +420,19 @@ export default {
                    
 
 
-                        };
-           this.$refs.child.tableRows=[];
+          };
+          this.$refs.child.tableRows=[]
           detailes.forEach(dItem=>{
-               this.details_update={
-                    transfer_id:dItem.transfer_id,
-                    item_id: dItem.item_id,
-                    item_desc1: dItem.item_desc1,
-                    item_desc2: dItem.item_desc2,
-                    qty: dItem.qty,
-                    remark: dItem.remark,
-                    update_by: dItem.update_by
-               }
-               this.$refs.child.tableRows.push(this.details_update);
+                                  this.details_update={
+                                        transfer_id:dItem.transfer_id,
+                                        item_id: dItem.item_id,
+                                        item_desc1: dItem.item_desc1,
+                                        item_desc2: dItem.item_desc2,
+                                        qty: dItem.qty,
+                                        remark: dItem.remark,
+                                        update_by: dItem.update_by
+                                  }
+                                  this.$refs.child.tableRows.push(this.details_update)
 
 
           })
@@ -444,18 +444,21 @@ export default {
         let self=this;
         //Header處理
           //獲取原倉庫的名稱資訊
-          this.options_from_warehouse.forEach(fromItem=>{
-            if(fromItem.from_wh_id==this.editData.from_wh_id){
-              this.editData.from_wh_desc1=fromItem.from_wh_desc1;
-              this.editData.from_wh_desc2=fromItem.from_wh_desc2;
-            }
+          this.options_from_warehouse.forEach(
+              fromItem=>{
+                  if(fromItem.from_wh_id==this.editData.from_wh_id)
+                  {
+                        this.editData.from_wh_desc1=fromItem.from_wh_desc1
+                        this.editData.from_wh_desc2=fromItem.from_wh_desc2
+                  }
           })
           //獲取轉至倉的名稱資訊
-          this.options_to_warehouse.forEach(toItem=>{
-            if(toItem.to_wh_id==this.editData.to_wh_id){
-              this.editData.to_wh_desc1=toItem.to_wh_desc1;
-              this.editData.to_wh_desc2=toItem.to_wh_desc2;
-            }
+          this.options_to_warehouse.forEach(
+              toItem=>{
+                  if(toItem.to_wh_id==this.editData.to_wh_id){
+                    this.editData.to_wh_desc1=toItem.to_wh_desc1
+                    this.editData.to_wh_desc2=toItem.to_wh_desc2
+                  }
           })
 
           //Header表取值
@@ -472,59 +475,45 @@ export default {
                   create_by:"jx.xu"
                 };
           //Details表取值
-          this.detailsRows=this.$refs.child.tableRows;
-          this.detailsRows.forEach(detilsItem=>{
-            //統計入倉總數量
-            this.header_new.qty=Number(this.header_new.qty)+Number(detilsItem.qty);            
-          })                
-        this.$http.post(this.$parent.addLink,
-                        {
-                          "header":self.header_new, "details":self.detailsRows
-                        })
-                    .then(function(response){
-                        if(response.data.code>0)
-                        {
-                          self.$refs.child.showAlert(response.data.msg,"success");
-                          self.beforeOpen();//如果成功保存，即重新初始化數據。
+          this.detailsRows=this.$refs.child.tableRows
+          this.detailsRows.forEach(
+               detilsItem=>{
+                    //統計入倉總數量
+                    this.header_new.qty=Number(this.header_new.qty)+Number(detilsItem.qty);            
+          })  
+ 
+          let saveData={
+                          "header":self.header_new,
+                          "details":self.detailsRows
 
-                        }
-                        else{
-                          self.$refs.child.showAlert(response.data.msg,"danger");
-
-                        }
-
-                        self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                        self.$parent.isLoading=false;//關閉加載頁面
-                        self.isSaveDisabled=false;//啟用保存制
-                        self.saveText="保存"//保存制保存的字樣
-                        self.$parent.$refs.trTable.badingData();
-                    })
-                    .catch(function(error){
-                        console.log(error);
-                        self.$refs.child.showAlert(error,"danger");
-                        self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                        self.$parent.isLoading=false;//關閉加載頁面
-                        self.isSaveDisabled=false;//啟用保存制
-                        self.saveText="保存"//保存制保存的字樣
-                        self.$parent.$refs.trTable.badingData();
-                    })
+          }
+          
+         let s=this.$refs.child.saveData(this,this.$parent.addLink,saveData)
+         if (s==1){
+           this.beforeOpen()
+         }
+          
       },
     updateData(){
         let self=this;
         //Header處理
           //獲取原倉庫的名稱資訊
-          this.options_from_warehouse.forEach(fromItem=>{
-            if(fromItem.from_wh_id==this.editData.from_wh_id){
-              this.editData.from_wh_desc1=fromItem.from_wh_desc1;
-              this.editData.from_wh_desc2=fromItem.from_wh_desc2;
-            }
+          this.options_from_warehouse.forEach(
+               fromItem=>{
+                    if(fromItem.from_wh_id==this.editData.from_wh_id)
+                    {
+                      this.editData.from_wh_desc1=fromItem.from_wh_desc1;
+                      this.editData.from_wh_desc2=fromItem.from_wh_desc2;
+                    }
           })
           //獲取轉至倉的名稱資訊
-          this.options_to_warehouse.forEach(toItem=>{
-            if(toItem.to_wh_id==this.editData.to_wh_id){
-              this.editData.to_wh_desc1=toItem.to_wh_desc1;
-              this.editData.to_wh_desc2=toItem.to_wh_desc2;
-            }
+          this.options_to_warehouse.forEach(
+               toItem=>{
+                    if(toItem.to_wh_id==this.editData.to_wh_id)
+                    {
+                      this.editData.to_wh_desc1=toItem.to_wh_desc1;
+                      this.editData.to_wh_desc2=toItem.to_wh_desc2;
+                    }
           })
           //Header表更新
           this.header_update={
@@ -542,41 +531,19 @@ export default {
                 };
           //Details表取值
           this.detailsRows=this.$refs.child.tableRows;
-          this.detailsRows.forEach(detilsItem=>{
-
-            //統計入倉總數量
-            this.header_update.qty=Number(this.header_update.qty)+Number(detilsItem.qty);
+          this.detailsRows.forEach(
+               detilsItem=>{
+                    //統計入倉總數量
+                    this.header_update.qty=Number(this.header_update.qty)+Number(detilsItem.qty);
 
           })
-        this.$http.post(this.$parent.updateLink,
-                          {
-                            "header":self.header_update, "details":self.detailsRows   
-                          })
-                      .then(function(response){
-                          if(response.data.code>0)
-                          {
-                            self.$refs.child.showAlert(response.data.msg,"success");
 
-                          }
-                          else{
-                            self.$refs.child.showAlert(response.data.msg,"danger");
-
-                          }
-                          self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                          self.$parent.isLoading=false;//關閉加載頁面
-                          self.isSaveDisabled=false;//啟用保存制
-                          self.saveText="保存"//保存制保存的字樣
-                          self.$parent.$refs.trTable.badingData();
-                      })
-                      .catch(function(error){
-                          console.log(error);
-                          self.$refs.child.showAlert(error,"danger");
-                          self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                          self.$parent.isLoading=false;//關閉加載頁面
-                          self.isSaveDisabled=false;//啟用保存制
-                          self.saveText="保存"//保存制保存的字樣
-                          self.$parent.$refs.trTable.badingData();                            
-                      })
+          let saveData={
+                        "header":self.header_update,
+                        "details":self.detailsRows
+          }
+          
+         this.$refs.child.saveData(this,self.header_update,saveData)          
       }, 
 
       getWareHouse(){
@@ -665,33 +632,77 @@ export default {
         item.qty=Number(item.qty);
       
 
-      }
+      },
+      //顯示刪除對話框
+      deleteShow(delItem){       
+        this.deleteItem=delItem.data.item
+        this.delMsg="是否移除【"+this.deleteItem.item_desc2+"】這條項目？"
+        this.$bvModal.show('ItemDele')
 
+      },
+     //刪除已選項
+      deleteRow(){
+        for(let i in this.$refs.child.tableRows)
+        {
+               if(this.deleteItem.item_id==this.$refs.child.tableRows[i].item_id)
+               {
+                  this.$refs.child.tableRows.splice(i, 1)
+               }
+
+        }
+        //更新分頁數據
+        this.$refs.child.tableConfig.totalRows=this.$refs.child.tableRows.length
+        this.$refs.child.tableConfig.totalPage=Math.ceil(this.$refs.child.tableConfig.totalRows / this.$refs.child.tableConfig.perPage)
+        this.$refs.delItem.closeDialog()
+      },
+      isWHSame(value){
+          let se=this
+          let isSelectSame=true
+          if (value === '') return false
+          if(this.editData.from_wh_id==this.editData.to_wh_id & se.operation=="add")
+          {
+            isSelectSame=true  
+          }
+          else
+          {
+            isSelectSame=false 
+          }
+          return Boolean(isSelectSame)
+      }
 
   },
   components:{
-    publicDialogTable,
-    transItemDialog,
+    transferItemDialog,
     ModelListSelect
 
   },
   mounted(){
-    this.$refs.child.modal_titel="轉倉管理";
+    this.$refs.child.modal_titel="轉倉管理"
     this.$refs.child.serverModel=false;//分頁時不會在DB時獲取數據
-    this.$refs.ttItemDialog.setModalDialogName("TransferItemDialog");
-    this.$refs.child.selectMode="single";
+    this.$refs.ttItemDialog.setModalDialogName("TransferItemDialog")
+    this.$refs.child.selectMode="single"
+    this.$refs.delItem.myName="ItemDele"//設置本對話框內的【Item刪除對話框】的名稱，以區分Trans_Delete的名稱
+    this.$refs.delItem.modal_titel="刪除已選擇資產項"//設置本對話框內的【Item刪除對話框】的標題
 
   },
   validations: {
     editData: {
       from_wh_id:{
-        required
+        required,
+        isSame (value) {//驗證是否相同
+             return  this.isWHSame(value)
+        }
+
       },
       to_wh_id:{
-        required
+        required,
+        isSame (value) {//驗證是否相同
+             return  this.isWHSame(value)
+        }
       },     
       transfer_date:{
-        required
+        required,
+
       },
       invoice_no:{
         required

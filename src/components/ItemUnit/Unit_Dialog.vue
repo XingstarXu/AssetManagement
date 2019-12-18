@@ -65,7 +65,6 @@
 </div>
 </template>
 <script>
-import publicDialog from "../PublicDialog/PublicDialog"
 import { required } from 'vuelidate/lib/validators'
 export default {
   name:"itDialog",
@@ -82,7 +81,10 @@ export default {
       },
       isDisabled:false,
       operation:"",
-      editDisable_Disabled:false
+      editDisable_Disabled:false,
+      addData:{},
+      updateData:{},
+      parentTable: null
 
     }
   },
@@ -94,31 +96,37 @@ export default {
               return;
         }
         else{
-            this.$refs.child.confirmData();//調用公用窗體的confirmData方法，用禁用相關的按鈕。
-            this.$parent.isLoading=true;//啟動加載頁面
-            this.saveText="Saveing...";//保存制正在保存中的字樣
-            this.isSaveDisabled=true;//禁用保存制
+            
+            this.addData={  "unit_desc1":this.editData.unit_desc1, 
+                            "unit_desc2":this.editData.unit_desc2, 
+                            "create_by":"jx.xu"  
+                         }
+            this.updateData={
+                            "unit_id":this.editData.unit_id, 
+                            "unit_desc1":this.editData.unit_desc1, 
+                            "unit_desc2":this.editData.unit_desc2,  
+                            "disable":this.editData.disable,
+                            "update_by":"jx.xu"      
+                            }               
             switch(this.operation)
             {
               case "add":
-                this.addData();
-
+                this.$refs.child.saveData(this,this.$parent.addLink,this.addData)
                 break;
               case "update":
-                this.updateData();
+                this.$refs.child.saveData(this,this.$parent.updateLink,this.updateData)
                 break;
-
-
             }
         }
     },
 
     beforeOpen(){
-      this.$v.$reset();
-      this.continueSaver=false;
-      this.isDisabled=true; 
-      this.$parent.isLoading=false; 
-      this.editDisable_Disabled=false;//停用項是否可以編輯     
+      this.$v.$reset()
+      this.continueSaver=false
+      this.isDisabled=true 
+      this.$parent.isLoading=false 
+      this.editDisable_Disabled=false//停用項是否可以編輯  
+      this.parentTable=this.$parent.$refs.UnTable   
       if(this.operation=="add")
       {
           this.editData={
@@ -131,67 +139,7 @@ export default {
           this.editDisable_Disabled=true;//停用項是否可以編輯
       }
     },
-     addData(){
-          let self=this;         
-          this.$http.post(this.$parent.addLink,
-                           {
-                              "unit_desc1":self.editData.unit_desc1, "unit_desc2":self.editData.unit_desc2, "create_by":"jx.xu"   
-                           })
-                        .then(function(response){
-                            if(response.data.code>0)
-                            {
-                              self.$refs.child.showAlert(response.data.msg,"success");
-
-                            }
-                            else{
-                              self.$refs.child.showAlert(response.data.msg,"danger");
-
-                            }
-
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.UnTable.badingData();
-                        })
-                        .catch(function(error){
-                            console.log(error);
-                            self.$refs.child.showAlert(error,"danger");
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.UnTable.badingData();
-                        })
-      },
-    updateData(){
-          let self=this;         
-          this.$http.post(this.$parent.updateLink,
-                           {
-                              "unit_id":self.editData.unit_id, "unit_desc1":self.editData.unit_desc1, "unit_desc2":self.editData.unit_desc2,  "disable":self.editData.disable,"update_by":"jx.xu"   
-                           })
-                        .then(function(response){
-                            if(response.data.code>0)
-                            {
-                              self.$refs.child.showAlert(response.data.msg,"success");
-
-                            }
-                            else{
-                              
-                              self.$refs.child.showAlert(response.data.msg,"danger");
-
-                            }
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.UnTable.badingData();
-                        })
-                        .catch(function(error){
-                            console.log(error)
-                        })
-      },
-      setData(editRow){
+    setData(editRow){
                   this.editData={
                         unit_id:editRow.unit_id,
                         unit_desc1:editRow.unit_desc1,
@@ -204,7 +152,6 @@ export default {
  
   },
   components:{
-    publicDialog
   },
   mounted(){
     this.$refs.child.modal_titel="資產單位管理"

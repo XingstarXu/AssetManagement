@@ -95,7 +95,6 @@
 </div>
 </template>
 <script>
-import publicDialog from "../PublicDialog/PublicDialog"
 import { required, minLength } from 'vuelidate/lib/validators'
 export default {
   name:"shDialog",
@@ -113,7 +112,10 @@ export default {
       isDisabled:false,//控制輸入項是否可以編輯
       editDisable_Disabled:false,//停用項是否可以編輯
       operation:"",//窗體的操作類型 add:新增， update:更改
-      continueSaver:false //是否繼續保存標示
+      continueSaver:false, //是否繼續保存標示
+      addData:{},
+      updateData:{},
+      parentTable: null
 
 
       
@@ -143,18 +145,27 @@ export default {
               this.continueSaver=false
             }
             
-            this.$refs.child.confirmData();//調用公用窗體的confirmData方法，用禁用相關的按鈕。
-            this.$parent.isLoading=true;//啟動加載頁面
-            this.saveText="Saveing...";//保存制正在保存中的字樣
-            this.isSaveDisabled=true;//禁用保存制
+            this.addData={  "warehouse_code":this.editData.warehouse_code, 
+                            "warehouse_desc1":this.editData.warehouse_desc1, 
+                            "warehouse_desc2":this.editData.warehouse_desc2, 
+                            "create_by":"jx.xu"
+                         }
+            this.updateData={
+                            "warehouse_id": this.editData.warehouse_id,
+                            "warehouse_code":this.editData.warehouse_code, 
+                            "warehouse_desc1":this.editData.warehouse_desc1, 
+                            "warehouse_desc2":this.editData.warehouse_desc2, 
+                            "disable":this.editData.disable,
+                            "update_by":"jx.xu"        
+                            }               
             switch(this.operation)
-            { 
+            {
               case "add":
-                this.addData();
+                this.$refs.child.saveData(this,this.$parent.addLink,this.addData)
 
                 break;
               case "update":
-                this.updateData();
+                this.$refs.child.saveData(this,this.$parent.updateLink,this.updateData)
                 break;
 
 
@@ -162,10 +173,11 @@ export default {
         }
     },
     beforeOpen(){
-      this.$v.$reset();
-      this.continueSaver=false;
-      this.isDisabled=true;  
-      this.editDisable_Disabled=false;     
+      this.$v.$reset()
+      this.continueSaver=false
+      this.isDisabled=true  
+      this.editDisable_Disabled=false
+      this.parentTable=this.$parent.$refs.shTable      
       if(this.operation=="add")
       {
           this.editData={
@@ -175,78 +187,11 @@ export default {
             warehouse_desc2:"",
             disable:0
           }
-          this.isDisabled=false; 
-          this.editDisable_Disabled=true; 
+          this.isDisabled=false 
+          this.editDisable_Disabled=true 
       }
-      console.log(this.editData.disable)
-      //e.preventDefault();//取消打開
-      //alert(e.params.myui[0]);
     },
-     addData(){
-          let self=this;         
-          this.$http.post(this.$parent.addLink,
-                           {
-                             "warehouse_code":self.editData.warehouse_code, "warehouse_desc1":self.editData.warehouse_desc1, "warehouse_desc2":self.editData.warehouse_desc2, "create_by":"jx.xu"   
-                           })
-                        .then(function(response){
-                            if(response.data.code>0)
-                            {
-                              self.$refs.child.showAlert(response.data.msg,"success");
-
-                            }
-                            else{
-                              self.$refs.child.showAlert(response.data.msg,"danger");
-
-                            }
-
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.shTable.badingData();
-                        })
-                        .catch(function(error){
-                            console.log(error);
-                            self.$refs.child.showAlert(error,"danger");
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.shTable.badingData();
-                        })
-      },
-    updateData(){
-          let self=this;         
-          this.$http.post(this.$parent.updateLink,
-                           {
-                             "warehouse_id": self.editData.warehouse_id,"warehouse_code":self.editData.warehouse_code, "warehouse_desc1":self.editData.warehouse_desc1, "warehouse_desc2":self.editData.warehouse_desc2, "disable":self.editData.disable,"update_by":"jx.xu"   
-                           })
-                        .then(function(response){
-                            if(response.data.code>0)
-                            {
-                              self.$refs.child.showAlert(response.data.msg,"success");
-
-                            }
-                            else{
-                              self.$refs.child.showAlert(response.data.msg,"danger");
-
-                            }
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.shTable.badingData();
-                        })
-                        .catch(function(error){
-                            console.log(error);
-                            self.$refs.child.showAlert(error,"danger");
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.shTable.badingData();                            
-                        })
-      },      
+  
 
       // 封装axios请求，返回promise, 用于驗證是否唯一。
     getCodeUnique (data) {
@@ -278,12 +223,10 @@ export default {
 
   },
   components:{
-    publicDialog
+
   },
   mounted(){
     this.$refs.child.modal_titel="倉庫管理"
-
-
   },
   validations: {
     editData: {
@@ -297,7 +240,7 @@ export default {
             if (value === '') return true
             try {
               let res = await se.getCodeUnique(value)
-              console.log(res);
+
               // 等拿到返回数据res后再进行处理
               if(res.data.res==0 | se.operation=="update")
               {

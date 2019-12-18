@@ -161,7 +161,7 @@
            
            </b-col>
            <b-col cols="2" style="text-align:right">
-              <slot name="okbutten" :confirmData="confirmData">
+              <slot name="okbutten">
                 
               </slot>
            </b-col>
@@ -174,7 +174,7 @@
 </template>
 <script>
 export default {
-  name:"publicDialog",
+  name:"publicDialogTable",
   data(){
     return{
       modal_titel:"",
@@ -210,98 +210,125 @@ export default {
   methods:{
     //打開對話框前
     beforeOpen (e) {  
-       this.isAoutoClose=false;//設置為手動關閉標識（false:手動關閉）
-       this.cancelDisabled=false;//禁用Cancel制標識
-       this.isHideCloseButten=false;//顯示關閉制標識
-       this.$parent.beforeOpen(e);//調用父窗體的方法，用來處理不同窗體特有的處理
-       this.dismissCountDown=0;//初始化提示的顯示
+       this.isAoutoClose=false//設置為手動關閉標識（false:手動關閉）
+       this.cancelDisabled=false//禁用Cancel制標識
+       this.isHideCloseButten=false//顯示關閉制標識
+       this.$parent.beforeOpen(e)//調用父窗體的方法，用來處理不同窗體特有的處理
+       this.dismissCountDown=0//初始化提示的顯示
        
     },
-     //關閉對話框前時的處理
-     cardCloseDo(bvModalEvt){
-         if(!this.isAoutoClose)//如果不是手動關閉即不會關閉對話框（即防止點擊背景時自動關閉）
-         {
-           bvModalEvt.preventDefault();
-             return;
-         }
+      //關閉對話框前時的處理
+    cardCloseDo(bvModalEvt){
+          if(!this.isAoutoClose)//如果不是手動關閉即不會關閉對話框（即防止點擊背景時自動關閉）
+          {
+            bvModalEvt.preventDefault()
+              return
+          }
 
-    },
-    //手動關閉對話框
-     closeDialog(){
-
-         this.isAoutoClose=true//標志為手動關閉。
-         this.$root.$emit('bv::hide::modal', this.myModalDialog)
-     },
-
-     closeConfirm(){
-
-                   this.cancelDisabled=false;
-                   this.isHideCloseButten=false;
-     },
-
-     confirmData(){
-         this.isHideCloseButten=true
-         this.cancelDisabled=true
-
-     },
-     countDownChanged(dismissCountDown) {
-        this.dismissCountDown = dismissCountDown
       },
+      //手動關閉對話框
+    closeDialog(){
+
+          this.isAoutoClose=true//標志為手動關閉。
+          this.$root.$emit('bv::hide::modal', this.myModalDialog)
+      },
+
+
+    openConterl(thisParent){
+
+          this.cancelDisabled=false
+          this.isHideCloseButten=false
+          thisParent.$parent.isLoading=false//關閉加載頁面
+          thisParent.isSaveDisabled=false//啟用保存制
+          thisParent.saveText="保存"//保存制保存的字樣
+                            
+      },
+
+    closeControl(thisParent){
+          this.isHideCloseButten=true
+          this.cancelDisabled=true
+          thisParent.$parent.isLoading=true//啟動加載頁面
+          thisParent.saveText="Saveing..."//保存制正在保存中的字樣
+          thisParent.isSaveDisabled=true//禁用保存制
+
+        },
+    saveData(controlDialog,saveLink,saveData){
+            let self=this
+            let run=0
+            this.closeControl(controlDialog)//調用公用窗體的confirmData方法，用禁用相關的按鈕。         
+            this.$http.post(saveLink,
+                            saveData)
+                          .then(function(response){
+                              if(response.data.code>0)
+                              {
+                                self.showAlert(response.data.msg,"success")
+                                run=1
+
+                              }
+                              else{
+                                self.showAlert(response.data.msg,"danger")
+
+                              }
+
+                              self.openConterl(controlDialog)//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
+                              controlDialog.parentTable.textSearch()
+
+                          })
+                          .catch(function(error){
+                              console.log(error)
+                              self.showAlert(error,"danger")
+                              self.openConterl(controlDialog)//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
+                              controlDialog.parentTable.textSearch()
+                          })
+            return run
+        },
+
+
+    countDownChanged(dismissCountDown) {
+          this.dismissCountDown = dismissCountDown
+        },
     showAlert(showText,showVariant) {
-        this.dismissCountDown = this.dismissSecs;
-        this.alert_text=showText;
-        this.alert_variant=showVariant;
-      },
-      badingData(){
-        console.clear();
-         this.$parent.badingData();//調用父級的綁定數據方法，以應用不同的處理。
-
+          this.dismissCountDown = this.dismissSecs
+          this.alert_text=showText
+          this.alert_variant=showVariant
+        },
+    badingData(){
+        console.clear()
+        this.$parent.badingData()//調用父級的綁定數據方法，以應用不同的處理。
        },
-       rowClass(item) {
-         return this.$parent.rowClass(item);
-
+    rowClass(item) {
+         return this.$parent.rowClass(item)
        },
 
-      pageChange (page) {
-        this.$parent.pageChange(page);
-          
+    pageChange (page) {
+        this.$parent.pageChange(page)
       },       
-
-      // pageChange (page) {
-      //     this.tableConfig.currentPage = page;
-      //     if(this.serverModel)
-      //     {
-      //       this.badingData(); 
-      //     }
-          
-      // },
 // 處理已選擇行的記錄。刪除已選擇行的記錄
-      onRowClicked(item){
-
-         this.$parent.onRowClicked(item);
+    onRowClicked(item){
+         this.$parent.onRowClicked(item)
       },
 // 處理已選擇行的記錄。保存已選擇行的記錄
-      onRowSelected(items){
+    onRowSelected(items){
          this.$parent.onRowSelected(items)
       },
 
   //處理已選行的樣式，已選擇則顯示√，否則顯示不顯示     
-      isSelected(citem){       
-        return this.$parent.isSelected(citem);
+    isSelected(citem){       
+        return this.$parent.isSelected(citem)
       },   
-      selectAll(){
-        this.$refs.selectTable.selectAllRows();
+    selectAll(){
+        this.$refs.selectTable.selectAllRows()
       },
-      unSelectAll(){
-        this.$refs.selectTable.clearSelected();
+    unSelectAll(){
+        this.$refs.selectTable.clearSelected()
       },
-      selectRow(index){
+    selectRow(index){
         this.$refs.selectTable.selectRow(index)
       },
-      unselectRow(index){
+    unselectRow(index){
         this.$refs.selectTable.unselectRow(index)
       },
-      isRowSelected(index){
+    isRowSelected(index){
         return this.$refs.selectTable.isRowSelected(index)
 
       }

@@ -5,6 +5,12 @@
 
         <publicTable ref="child" >
             <template v-slot:searchAdd>
+                    <b-input-group prepend="搜索" class="mt-3">
+                        <b-form-input v-model="searchText" @input="setValue($event)"></b-form-input>
+                        <b-input-group-append>
+                        <b-button variant="outline-success" @click="textSearch" >Search</b-button>
+                        </b-input-group-append>
+                    </b-input-group>
                     <b-input-group prepend="篩選" class="mt-3">
                         <b-input-group-append is-text>
                         <b-form-select v-model="isDisable" :options="disableOptions" @change="textSearch"></b-form-select>
@@ -33,7 +39,6 @@
    </div>
 </template>
 <script>
-import publicTable from '../PublicTable/PublicTable'
 export default {
     name:'StoreHouse',
     data(){
@@ -62,7 +67,10 @@ export default {
                     ],
 
                 isDisable:-1,
-                disableOptions:[{value:1 ,text:"停用"},{value:0 ,text:"啟用"},{value:-1 ,text:"全部"}]
+                disableOptions:[{value:1 ,text:"停用"},{value:0 ,text:"啟用"},{value:-1 ,text:"全部"}],
+                searchText:"",
+                searchLink:"",
+                searchData:{}, 
         }
     },
     methods:{
@@ -89,51 +97,41 @@ export default {
 
 
        },
-       badingData(){
-            let self=this; 
-            self.isLoading=true;  
-            let myCurrentPage=self.$refs.child.config.currentPage;
-            let myPerPage=self.$refs.child.config.perPage;
-            let mySearch=self.$refs.child.config.search;
-            let myDisable=self.isDisable;
-            this.$http.post(this.$parent.searchLink,{"page":myCurrentPage,"num_of_page":myPerPage,"search":mySearch,"disable":myDisable,"order_by":"","order_desc":false})
-                        .then(function(response){
-                            let res=response.data;
-                            self.$refs.child.rows = res.data
-                            self.$refs.child.columns=self.columns
-                            //self.isLoading=false;
-                            self.$refs.child.config.totalPage=res.total_page;  
-                            self.$refs.child.config.totalRows=res.records;
-                            //self.updateTableData();
-                        })
-                        .catch(function(error){
-                            console.log(error);
-                            self.isLoading=false;
-                        })
-       },
+        setValue(value){
+                //this.config.search=value.toUpperCase();
+                this.searchText=value;
 
+        }, 
 
-     textSearch(){
-         this.badingData();
-     },
-    //停用或取消記錄時的行樣式
-    rowClass(item) {
-        
-        if (!item) return
-        if (item.disable === 1 ){
-            return 'table-danger'
-        } 
-    },
+        textSearch(){
+            this.searchLink=this.$parent.searchLink
+            this.searchData={
+                        "page":this.$refs.child.config.currentPage,
+                        "num_of_page":this.$refs.child.config.perPage,
+                        "search":this.searchText,
+                        "disable":this.isDisable,
+                        "order_by":"",
+                        "order_desc":false
+            }
+            this.$refs.child.badingData(this);//調用公用表的綁定方法
+        },
+        //停用或取消記錄時的行樣式
+        rowClass(item) {
+            
+            if (!item) return
+            if (item.disable === 1 ){
+                return 'table-danger'
+            } 
+        },
      
     },
     components:{
-        publicTable
 
     },
     mounted:function(){
         this.$refs.child.columns=this.columns;
         this.$refs.child.config.title="倉庫管理"
-        this.badingData();
+        this.textSearch();
 
         
     },

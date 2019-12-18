@@ -10,7 +10,6 @@
     </loading>
     <StoreHouseTable ref="shTable"/>
     <StoreHouseDialog ref="shDialog"/>
-    <StoreHouseDelete ref="shDelete"/>
     
 </div>
 </template>
@@ -18,7 +17,6 @@
 <script>
 import StoreHouseTable from "../../components/StoreHouse/StoreHouse_Table";
 import StoreHouseDialog from "../../components/StoreHouse/StoreHouse_Dialog";
-import StoreHouseDelete from "../../components/StoreHouse/StoreHouse_Delete";
 import Loading from "vue-loading-overlay";
 import "vue-loading-overlay/dist/vue-loading.css";
 
@@ -39,7 +37,6 @@ export default {
     components:{
         StoreHouseTable,
         StoreHouseDialog,
-        StoreHouseDelete,
         Loading
 
     }

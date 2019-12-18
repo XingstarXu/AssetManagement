@@ -10,12 +10,6 @@
                 <b-container fluid >
                     <b-row>
                         <b-col >
-                            <b-input-group prepend="搜索" class="mt-3">
-                                    <b-form-input v-model="config.search" @input="setValue($event)"></b-form-input>
-                                    <b-input-group-append>
-                                    <b-button variant="outline-success" @click="textSearch" >Search</b-button>
-                                    </b-input-group-append>
-                            </b-input-group>
                             <slot name="searchAdd">
                             </slot>
                         </b-col>
@@ -101,7 +95,7 @@
 <script>
 
 export default {
-    name:'StoreHouse',
+    name:'publicTable',
     data(){
         return{
             rows:[],
@@ -127,21 +121,34 @@ export default {
 
             pageChange (page) {
                 this.config.currentPage = page;
-                this.$parent.badingData(); //調用父級的綁定數據方法，以應用不同的處理。
+                this.$parent.textSearch(); //調用父級的查詢方法，以應用不同的處理。
             },
 
-            textSearch(){
-                this.$parent.textSearch();//調用父級的數據查詢方法，以應用不同的處理。
-            },
-            setValue(value){
-                //this.config.search=value.toUpperCase();
-                this.config.search=value;
-
-            },
             selectRow(index){
                 this.$refs.publicTable.selectRow(index);
+            },
+            badingData(publicTable){
+                    let self=this; 
+                    let searchLink=publicTable.searchLink
+                    let searchData=publicTable.searchData
+                    publicTable.$parent.isLoading=true;  
+                    this.$http.post(searchLink,searchData)
+                                .then(function(response){
+                                    let res=response.data;
+                                    self.rows = res.data
+                                    publicTable.$parent.isLoading=false; 
+                                    self.config.totalPage=res.total_page;  
+                                    self.config.totalRows=res.records;
 
-            }
+                                })
+                                .catch(function(error){
+                                    console.log(error);
+                                    publicTable.$parent.isLoading=false; 
+                                })
+
+
+
+            },            
 
     },
     components:{

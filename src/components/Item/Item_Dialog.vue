@@ -189,7 +189,6 @@
 </div>
 </template>
 <script>
-import publicDialog from "../PublicDialog/PublicDialog"
 import { required } from 'vuelidate/lib/validators'
 import { ModelListSelect } from 'vue-search-select'
 // import { saveAs } from 'file-saver'
@@ -223,7 +222,10 @@ export default {
       photoErrorText:"",
       photoError:false,
       editDisable_Disabled:false,//停用項是否可以編輯
-      continueSaver:false //是否繼續保存標示
+      continueSaver:false, //是否繼續保存標示
+      addData:{},
+      updateData:{},
+      parentTable: null
 
     }
   },
@@ -232,7 +234,7 @@ export default {
         this.$v.$touch()
         if(this.$v.$invalid){
               
-              return;
+              return
         }
         else{
             if(this.editData.disable & !this.continueSaver)
@@ -249,18 +251,49 @@ export default {
               this.continueSaver=false
             }
 
-            this.$refs.child.confirmData();//調用公用窗體的confirmData方法，用禁用相關的按鈕。
-            this.$parent.isLoading=true;//啟動加載頁面
-            this.saveText="Saveing...";//保存制正在保存中的字樣
-            this.isSaveDisabled=true;//禁用保存制
+            this.addData={   "item_desc1":this.editData.item_desc1, 
+                             "item_desc2":this.editData.item_desc2, 
+                             "qty":this.editData.qty, 
+                             "unit_id":this.editData.unit_id, 
+                             "type_id":this.editData.type_id, 
+                             "model_no":this.editData.model_no, 
+                             "img":this.editData.img, 
+                             "iso":this.editData.iso,
+                             "create_by":"jx.xu" 
+                         }
+            this.updateData={
+                              "item_id":this.editData.item_id,
+                              "item_desc1":this.editData.item_desc1,
+                              "item_desc2":this.editData.item_desc2, 
+                              "item_code":this.editData.item_code,
+                              "qty":this.editData.qty, 
+                              "unit_id":this.editData.unit_id, 
+                              "type_id":this.editData.type_id, 
+                              "model_no":this.editData.model_no, 
+                              "img":this.editData.img, 
+                              "iso":this.editData.iso,
+                              "disable":this.editData.disable,
+                              "update_by":"jx.xu"        
+                            }   
+           // if(this.photoFile){
+          //       var fn=this.photoFile.name;
+          //       //fn=response.data.item_code+fn.substring(fn.indexOf("."))
+          //       fn="/assetsPhoto/"+'test.jpg'
+          //       var FileSaver = require('file-saver');
+          //       FileSaver.saveAs(this.photoFile, fn);
+
+          // }                           
+                            
             switch(this.operation)
             {
               case "add":
-                this.addData();
+                this.$refs.child.saveData(this,this.$parent.addLink,this.addData)
+                //self.savePhoto()
 
                 break;
               case "update":
-                this.updateData();
+                this.$refs.child.saveData(this,this.$parent.updateLink,this.updateData)
+                //self.savePhoto()
                 break;
 
 
@@ -269,11 +302,12 @@ export default {
     },
 
     beforeOpen(){
-      this.$v.$reset();
-      this.continueSaver=false;
-      this.isDisabled=true; 
-      this.$parent.isLoading=false;  
-      this.editDisable_Disabled=false;    
+      this.$v.$reset()
+      this.continueSaver=false
+      this.isDisabled=true
+      this.$parent.isLoading=false
+      this.editDisable_Disabled=false
+      this.parentTable=this.$parent.$refs.itTable 
       if(this.operation=="add")
       {
           this.editData={
@@ -290,124 +324,27 @@ export default {
                           disable:""
 
                         }
-          this.isDisabled=false;  
-          this.editDisable_Disabled=true;
+          this.isDisabled=false
+          this.editDisable_Disabled=true
       }
       //靜態資源文件需要放在public文件夾中才能動態讀取到。
-      this.photoPath="/assetsPhoto/"+this.editData.img;
-      this.photoBase64=this.photoPath;
-      this.getType();
-      this.getUnit();
+      this.photoPath="/assetsPhoto/"+this.editData.img
+      this.photoBase64=this.photoPath
+      this.getType()
+      this.getUnit()
 
 
     },
-     addData(){
-          let self=this; 
-          // if(this.photoFile){
-          //       var fn=this.photoFile.name;
-          //       //fn=response.data.item_code+fn.substring(fn.indexOf("."))
-          //       fn="/assetsPhoto/"+'test.jpg'
-          //       var FileSaver = require('file-saver');
-          //       FileSaver.saveAs(this.photoFile, fn);
-
-          // }
-
-          this.$http.post(this.$parent.addLink,
-                           {
-                             "item_desc1":self.editData.item_desc1, 
-                             "item_desc2":self.editData.item_desc2, 
-                             "qty":self.editData.qty, 
-                             "unit_id":self.editData.unit_id, 
-                             "type_id":self.editData.type_id, 
-                             "model_no":self.editData.model_no, 
-                             "img":self.editData.img, 
-                             "iso":self.editData.iso,
-                             "create_by":"jx.xu"   
-                           })
-                        .then(function(response){
-                            if(response.data.code>0)
-                            {
-                              self.$refs.child.showAlert(response.data.msg,"success");
-                              //self.savePhoto();
-
-                            }
-                            else{
-                              self.$refs.child.showAlert(response.data.msg,"danger");
-
-                            }
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.itTable.badingData();
-                            
-
-                        })
-                        .catch(function(error){
-                            console.log(error);
-                            self.$refs.child.showAlert(error,"danger");
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.itTable.badingData();                            
-                        })
-      },
-    updateData(){
-          let self=this;   
-          this.$http.post(this.$parent.updateLink,
-                           {
-                              "item_id":self.editData.item_id,
-                              "item_desc1":self.editData.item_desc1,
-                              "item_desc2":self.editData.item_desc2, 
-                              "item_code":self.editData.item_code,
-                              "qty":self.editData.qty, 
-                              "unit_id":self.editData.unit_id, 
-                              "type_id":self.editData.type_id, 
-                              "model_no":self.editData.model_no, 
-                              "img":self.editData.img, 
-                              "iso":self.editData.iso,
-                              "disable":self.editData.disable,
-                              "update_by":"jx.xu"   
-                           })
-                        .then(function(response){
-                            if(response.data.code>0)
-                            {
-                              self.$refs.child.showAlert(response.data.msg,"success");
-                              //self.savePhoto();
-
-                            }
-                            else{
-                              self.$refs.child.showAlert(response.data.msg,"danger");
-
-                            }
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.itTable.badingData();
-                        })
-                        .catch(function(error){
-                            console.log(error);
-                            self.$refs.child.showAlert(error,"danger");
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="保存"//保存制保存的字樣
-                            self.$parent.$refs.itTable.badingData();
-                           
-                        })
-      }, 
-      
+     
     getType(){
-      let self=this;
+      let self=this
       this.$http.post(this.$parent.getTypeLink,{"disable":0}
                     )
                     .then(
                       function(response){
-                        let res=response.data;
+                        let res=response.data
                         
-                        self.options_Type=res.data;
+                        self.options_Type=res.data
 
 
                       }
@@ -419,13 +356,13 @@ export default {
                     )
     },
     getUnit(){
-      let self=this;
+      let self=this
       this.$http.post(this.$parent.getUnitLink,{"disable":0}
                     )
                     .then(
                       function(response){
-                        let res=response.data;                        
-                        self.options_Unit=res.data;
+                        let res=response.data                      
+                        self.options_Unit=res.data
 
                       }
                     )
@@ -463,23 +400,23 @@ export default {
     },
     //上傳文件時，自動顯示所上傳的文件圖片
     previewImage(ev){
-      let _this = this;
+      let _this = this
       var input=ev.target
       if(input.files && input.files[0]){
           if (input.files[0].size/(1024*1024) >1) 
           { 
-            _this.photoErrorText="上傳的圖片不可大於5M！"; 
-            _this.photoError=true;
-            return false; 
+            _this.photoErrorText="上傳的圖片不可大於5M！" 
+            _this.photoError=true
+            return false
           }
-          console.log(input.files[0]);
-          console.log(input.files[0].name.substring(input.files[0].name.indexOf(".")));
-           var reader = new FileReader();
+          console.log(input.files[0])
+          console.log(input.files[0].name.substring(input.files[0].name.indexOf(".")))
+           var reader = new FileReader()
            reader.onload = function (e) { 
-                  var base64 = e.target.result; 
-                  _this.photoBase64 = base64;
+                  var base64 = e.target.result 
+                  _this.photoBase64 = base64
                  }
-           reader.readAsDataURL(input.files[0]);
+           reader.readAsDataURL(input.files[0])
       }
 
     },
@@ -487,30 +424,26 @@ export default {
     //**待測試是否可以上傳文件到指定路徑**
     savePhoto(){
       let self=this;
-      let formData=new FormData();
-      formData.append("attachment",this.photoFile);
-      var url="assetsPhoto";
+      let formData=new FormData()
+      formData.append("attachment",this.photoFile)
+      var url="assetsPhoto"
       this.$http.post(url,formData,{
         headers:{'Content-Type':'multipart/form-data'}
       }).then(function(){
-        self.$refs.child.shoAlert("Photo saveed success!","success");
+        self.$refs.child.shoAlert("Photo saveed success!","success")
 
 
       }).catch(function(error){
-          self.$refs.child.showAlert(error,"danger");        
+          self.$refs.child.showAlert(error,"danger")        
       })
     }
  
   },
   components:{
-    publicDialog,
     ModelListSelect
   },
   mounted(){
-    this.$refs.child.modal_titel="資產管理";
-    
-
-
+    this.$refs.child.modal_titel="資產管理"
   },
   validations: {
     editData: {

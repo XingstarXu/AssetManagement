@@ -2,8 +2,28 @@
 <div>
   <publicDelete ref="child" >           
           <template v-slot:body>
-
-              <h6>是否確認刪除{{deleteData.code}}轉倉倉單？</h6>
+             <b-container>
+               <b-row>
+                 <b-col  lg="2">
+                </b-col>
+                 <b-col  lg="8">
+                   <h6>是否確認刪除{{deleteData.code}}轉倉倉單？</h6>
+                 </b-col>
+               </b-row>
+               <b-row>
+                     <b-col lg="3" style="text-align:right">
+                             刪除原因:                   
+                    </b-col>                     
+                     <b-col lg="8" >
+                                  <b-form-input v-model="$v.deleteData.void_reason.$model"  
+                                                :class="{ 'is-invalid': $v.deleteData.void_reason.$error,'is-valid':!$v.deleteData.void_reason.$invalid }"
+                                  ></b-form-input> 
+                                   <div v-if="$v.deleteData.void_reason.$error" class="invalid-feedback d-block">
+                                      <span>刪除原因是必要的</span>
+                                  </div>                                                                   
+                    </b-col>                   
+               </b-row>
+            </b-container>             
 
           </template>
           <template v-slot:okbutten >
@@ -23,9 +43,9 @@
 </div>
 </template>
 <script>
-import publicDelete from "../PublicDialog/PublicDelete"
+import { required } from 'vuelidate/lib/validators';
 export default {
-  name:"shDelete",
+  name:"ttDelete",
   data(){
     return{
       saveText:"確認",//保存制名稱
@@ -38,49 +58,14 @@ export default {
   },
   methods:{
     saveData(){
-            this.$refs.child.confirmData();//調用公用窗體的confirmData方法，用禁用相關的按鈕。
-            this.$parent.isLoading=true;//啟動加載頁面
-            this.saveText="Saveing...";//保存制正在保存中的字樣
-            this.isSaveDisabled=true;//禁用保存制
-            this.deleteData.disable=1;
-            this.updateData();
-    },
-    updateData(){
-            
-          //alert(this.deleteData.code);
-          let self=this;
-          console.log(self.deleteData._id);
-          this.$http.post(this.$parent.voidLink,
-                           {
-                              transfer_id:self.deleteData._id,void_by:"jx.xu",void_reason:"xxxx"
-                           })
-                        .then(function(response){
-                            if(response.data.code>0)
-                            {
-                              //self.$refs.child.showAlert(response.data.msg,"success");
-                                alert(response.data.msg);
-                            }
-                            else{
-                              //self.$refs.child.showAlert(response.data.msg,"danger");
-                                alert(response.data.msg);
-                            }
+            this.$v.$touch();
+            if(this.$v.$invalid){
+               return;
+            }
+            this.parentTable=this.$parent.$refs.tfTable
+            this.$refs.child.updateData(this,this.$parent.voidLink,this.saveData)
 
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="確認"//保存制保存的字樣
-                            self.$refs.child.closeDialog();//關閉窗體
-                            self.$parent.$refs.trTable.badingData();
-                        })
-                        .catch(function(error){
-                            console.log(error);
-                            alert("取消失敗！");
-                            self.$refs.child.closeConfirm();//調用公用窗體的closeConfirm方法，用啟用相關的按鈕。
-                            self.$parent.isLoading=false;//關閉加載頁面
-                            self.isSaveDisabled=false;//啟用保存制
-                            self.saveText="確認"//保存制保存的字樣                            
-                        })
-      },
+    },
       setData(deleteRow){
             //editRow.vendor_id.replace(/-/g,''),
                 this.deleteData={
@@ -91,12 +76,20 @@ export default {
  
   },
   components:{
-    publicDelete
+
   },
   mounted(){
-    this.$refs.child.modal_titel="取消訂單"
+    this.$refs.child.modal_titel="取消轉貨單"
 
 
+  },
+    validations: {
+    deleteData: {
+      void_reason:{
+        required
+      }
+                     
+    },
   }
   
 }

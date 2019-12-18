@@ -2,6 +2,12 @@
    <div>
         <publicTable ref="child" >
             <template v-slot:searchAdd>
+                    <b-input-group prepend="搜索" class="mt-3">
+                        <b-form-input v-model="searchText" @input="setValue($event)"></b-form-input>
+                        <b-input-group-append>
+                        <b-button variant="outline-success" @click="textSearch" >Search</b-button>
+                        </b-input-group-append>
+                    </b-input-group>                  
                     <b-input-group prepend="篩選" class="mt-3">
                         <b-input-group-append is-text>
                         <b-form-select v-model="isDisable" :options="disableOptions" @change="textSearch"></b-form-select>
@@ -23,7 +29,6 @@
    </div>
 </template>
 <script>
-import publicTable from '../PublicTable/PublicTable'
 export default {
     name:'item',
     data(){
@@ -46,7 +51,10 @@ export default {
                         }
                     ],
             isDisable:-1,   
-            disableOptions:[{value:1 ,text:"停用"},{value:0 ,text:"啟用"},{value:-1 ,text:"全部"}]          
+            disableOptions:[{value:1 ,text:"停用"},{value:0 ,text:"啟用"},{value:-1 ,text:"全部"}],
+            searchText:"",
+            searchLink:"",
+            searchData:{},         
 
         }
     },
@@ -61,7 +69,11 @@ export default {
            this.$parent.$refs.UnDialog.operation="add"
            this.$bvModal.show('ModalDialog');
        },
+       setValue(value){
+                //this.config.search=value.toUpperCase();
+                this.searchText=value;
 
+        },        
        badingData(){
             let self=this; 
             self.isLoading=true;  
@@ -87,10 +99,17 @@ export default {
 
 
        },
-
-
      textSearch(){
-         this.badingData();
+            this.searchLink=this.$parent.searchLink
+            this.searchData={
+                        "page":this.$refs.child.config.currentPage,
+                        "num_of_page":this.$refs.child.config.perPage,
+                        "search":this.searchText,
+                        "disable":this.isDisable,
+                        "order_by":"",
+                        "order_desc":false
+            }
+            this.$refs.child.badingData(this);//調用公用表的綁定方法
      },
      //停用或取消記錄時的行樣式
      rowClass(item) {
@@ -102,12 +121,11 @@ export default {
      },    
     },
     components:{
-        publicTable
     },
     mounted:function(){
         this.$refs.child.columns=this.columns;
         this.$refs.child.config.title="資產單位管理"
-        this.badingData();
+        this.textSearch();
 
         
     }
